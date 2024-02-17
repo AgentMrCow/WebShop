@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import dynamic from 'next/dynamic';
 import BootstrapNext from '@/app/(component)/BootstrapNext';
+import { Toaster } from "@/components/ui/toaster"
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "./globals.css";
 
@@ -24,7 +25,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en">
       <body className={inter.className}>
-          <div className="container">
 
             <header>
               <ShoppingCartComponentWithProvider/>
@@ -46,8 +46,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
               </ul>
               <p className="text-center text-muted">Copyright © 2024 Niu Ka Ngai. All rights reserved.</p>
             </footer>
+            <Toaster />
 
-          </div>
           <BootstrapNext />
       </body>
     </html>

@@ -1,228 +1,147 @@
 // @/app/admin/page.tsx
-/*
-import { CardTitle, CardDescription, CardHeader, CardContent, CardFooter, Card } from "@/components/ui/card"
-import { Label } from "@/components/ui/label"
-import { SelectValue, SelectTrigger, SelectItem, SelectContent, Select } from "@/components/ui/select"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Button } from "@/components/ui/button"
 
-export default function AdminPage() {
-  return (
-    <div className="grid gap-4 md:gap-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Insert Product</CardTitle>
-          <CardDescription>Enter the product details below</CardDescription>
-        </CardHeader>
-        <CardContent className="grid gap-4 md:gap-6">
-          <div className="grid gap-2">
-            <Label className="text-base" htmlFor="category">
-              Category
-            </Label>
-            <Select id="category" placeholder="Select a category">
-              <SelectTrigger className="w-full">
-                <SelectValue className="text-left" />
-              </SelectTrigger>
-              <SelectContent className="w-full">
-                <SelectItem value="1">Electronics</SelectItem>
-                <SelectItem value="2">Clothing</SelectItem>
-                <SelectItem value="3">Books</SelectItem>
-                <SelectItem value="4">Home & Garden</SelectItem>
-                <SelectItem value="5">Health & Beauty</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="grid gap-2">
-            <Label className="text-base" htmlFor="name">
-              Name
-            </Label>
-            <Input id="name" placeholder="Enter the product name" required />
-          </div>
-          <div className="grid gap-2">
-            <Label className="text-base" htmlFor="slug">
-              Slug (for URL)
-            </Label>
-            <Input id="url" placeholder="Enter the product slug" required />
-          </div>
-          <div className="grid gap-2">
-            <Label className="text-base" htmlFor="price">
-              Price
-            </Label>
-            <Input id="price" placeholder="Enter the product price" required type="number" />
-          </div>
-          <div className="grid gap-2">
-            <Label className="text-base" htmlFor="inventory">
-              Inventory
-            </Label>
-            <Input id="inventory" placeholder="Enter the product inventory" required type="number" />
-          </div>
-          <div className="grid gap-2">
-            <Label className="text-base" htmlFor="description">
-              Description
-            </Label>
-            <Textarea id="description" placeholder="Enter the product description" required />
-          </div>
-          <div className="grid gap-2">
-            <Label className="text-base">Image</Label>
-            <div className="border-2 border-dashed border-gray-200 rounded-lg p-6 flex flex-col items-center gap-1">
-              <div className="pointer-events-none flex items-center gap-2 text-sm">
-                <ImageIcon className="h-6 w-6 text-gray-400" />
-                <span className="font-medium text-gray-500">Drag and drop your files here</span>
-              </div>
-              <span className="text-xs text-gray-500">or</span>
-              <Button size="sm" variant="outline">
-                <UploadIcon className="h-3 w-3 mr-1.5 -translate-y-0.5" />
-                Browse
-              </Button>
-              <input className="hidden" type="file" />
-            </div>
-            <div className="border border-gray-200 rounded-lg p-4 grid gap-4 text-sm">
-              <div className="flex items-center gap-2">
-                <ImageIcon className="h-8 w-8 rounded-lg border border-gray-200 object-cover" />
-                <div className="flex-1">
-                  <div className="font-medium">IMG_1234.jpg</div>
-                  <div className="text-xs text-gray-500">1.2MB</div>
-                </div>
-                <Button size="sm" variant="outline">
-                  <XIcon className="h-3 w-3" />
-                  Remove
-                </Button>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-        <CardFooter className="flex gap-4">
-          <Button>Insert</Button>
-          <Button variant="outline">Reset</Button>
-        </CardFooter>
-      </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle>Insert Category</CardTitle>
-          <CardDescription>Enter the category details below</CardDescription>
-        </CardHeader>
-        <CardContent className="grid gap-4 md:gap-6">
-          <div className="grid gap-2">
-            <Label className="text-base" htmlFor="category-name">
-              Name
-            </Label>
-            <Input id="category-name" placeholder="Enter the category name" />
-          </div>
-          <div className="grid gap-2">
-            <Label className="text-base" htmlFor="category-link">
-              Link (for URL)
-            </Label>
-            <Input id="category-link" placeholder="Enter the product link" required />
-          </div>
-          <div className="grid gap-2">
-            <Label className="text-base">Image</Label>
-            <div className="border-2 border-dashed border-gray-200 rounded-lg p-6 flex flex-col items-center gap-1">
-              <div className="pointer-events-none flex items-center gap-2 text-sm">
-                <ImageIcon className="h-6 w-6 text-gray-400" />
-                <span className="font-medium text-gray-500">Drag and drop your files here</span>
-              </div>
-              <span className="text-xs text-gray-500">or</span>
-              <Button size="sm" variant="outline">
-                <UploadIcon className="h-3 w-3 mr-1.5 -translate-y-0.5" />
-                Browse
-              </Button>
-              <input className="hidden" type="file" />
-            </div>
-            <div className="border border-gray-200 rounded-lg p-4 grid gap-4 text-sm">
-              <div className="flex items-center gap-2">
-                <ImageIcon className="h-8 w-8 rounded-lg border border-gray-200 object-cover" />
-                <div className="flex-1">
-                  <div className="font-medium">IMG_1234.jpg</div>
-                  <div className="text-xs text-gray-500">1.2MB</div>
-                </div>
-                <Button size="sm" variant="outline">
-                  <XIcon className="h-3 w-3" />
-                  Remove
-                </Button>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-        <CardFooter className="flex gap-4">
-          <Button>Insert</Button>
-          <Button variant="outline">Reset</Button>
-        </CardFooter>
-      </Card>
-    </div>
-  )
-}
-
-function ImageIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
-      <circle cx="9" cy="9" r="2" />
-      <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
-    </svg>
-  )
-}
-
-function UploadIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-      <polyline points="17 8 12 3 7 8" />
-      <line x1="12" x2="12" y1="3" y2="15" />
-    </svg>
-  )
-}
-
-
-function XIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M18 6 6 18" />
-      <path d="m6 6 12 12" />
-    </svg>
-  )
-}
-*/
+"use client"
 
 import Link from "next/link"
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useFieldArray, useForm } from "react-hook-form";
+import { z } from "zod";
+import { cn } from "@/lib/utils"
+import { ChevronDownIcon } from "@radix-ui/react-icons"
+import { toast } from "@/components/ui/use-toast"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
 import { DropdownMenuTrigger, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuItem, DropdownMenuContent, DropdownMenu } from "@/components/ui/dropdown-menu"
 import { TableHead, TableRow, TableHeader, TableCell, TableBody, Table } from "@/components/ui/table"
+import { SelectValue, SelectTrigger, SelectItem, SelectContent, Select } from "@/components/ui/select"
+import { CardTitle, CardDescription, CardHeader, CardContent, CardFooter, Card } from "@/components/ui/card"
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+
+const productFormSchema = z.object({
+  name: z.string().min(1, "Product name is required."),
+  slug: z.string().min(1, "Product slug is required."),
+  price: z.number().min(0, "Price must be a positive number."),
+  inventory: z.number().min(0, "Inventory must be a positive number."),
+  description: z.string().min(1, "Product description is required."),
+  category: z.string({ required_error: "Please select a category", }),
+});
+
+type ProductFormValues = z.infer<typeof productFormSchema>;
+
+// This can come from your database or API.
+const defaultValues: Partial<ProductFormValues> = {
+
+}
+
+export default function AdminPage() {
+  const form = useForm<ProductFormValues>({
+    resolver: zodResolver(productFormSchema),
+    defaultValues,
+    mode: "onChange",
+  });
+
+  function onSubmit(data: ProductFormValues) {
+    // Here you would typically send the data to your backend or API
+    toast({
+      title: "You submitted the following values:",
+      description: (
+        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+        </pre>
+      ),
+    })
+  }
+
+  return (
+    <div className="admin-page-container">
+      {/* Your existing sidebar and header components can remain as they are */}
+
+      <main className="admin-main-content">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <Card>
+              <CardHeader>
+                <CardTitle>Insert Product</CardTitle>
+                <CardDescription>Enter the product details below</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <FormField
+                  control={form.control}
+                  name="category"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Category</FormLabel>
+                      <div className="relative w-max">
+                        <FormControl>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select a category" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="1">Electronics</SelectItem>
+                              <SelectItem value="2">Clothing</SelectItem>
+                              <SelectItem value="3">Books</SelectItem>
+                              <SelectItem value="4">Home & Garden</SelectItem>
+                              <SelectItem value="5">Health & Beauty</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                        <ChevronDownIcon className="absolute right-3 top-2.5 h-4 w-4 opacity-50" />
+                      </div>
+                      <FormDescription>
+                        Select your category.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter the product name" {...field} />
+                      </FormControl>
+                      <FormDescription>
+                        {"This is the product's name."}
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="slug"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Slug (for URL)</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter the product slug" {...field} />
+                      </FormControl>
+                      <FormDescription>
+                        {"For the url."}
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                {/* Additional fields for price, inventory, description, and category can follow the same pattern */}
+              </CardContent>
+              <CardFooter>
+                <Button type="submit">Insert</Button>
+              </CardFooter>
+            </Card>
+          </form>
+        </Form>
+      </main>
+    </div>
+  );
+}
 
 export default function Component() {
   return (
@@ -245,7 +164,7 @@ export default function Component() {
                 Home
               </Link>
               <Link
-                className="flex items-center gap-3 rounded-lg bg-gray-100 px-3 py-2 text-gray-900  transition-all hover:text-gray-900 dark:bg-gray-800 dark:text-gray-50 dark:hover:text-gray-50"
+                className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
                 href="#"
               >
                 <ShoppingCartIcon className="h-4 w-4" />
@@ -253,7 +172,7 @@ export default function Component() {
                 <Badge className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">12</Badge>
               </Link>
               <Link
-                className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
+                className="flex items-center gap-3 rounded-lg bg-gray-100 px-3 py-2 text-gray-900  transition-all hover:text-gray-900 dark:bg-gray-800 dark:text-gray-50 dark:hover:text-gray-50"
                 href="#"
               >
                 <PackageIcon className="h-4 w-4" />
@@ -284,7 +203,7 @@ export default function Component() {
             <span className="sr-only">Home</span>
           </Link>
           <div className="flex-1">
-            <h1 className="font-semibold text-lg">Recent Orders</h1>
+            <h1 className="font-semibold text-lg">Products</h1>
           </div>
           <div className="flex flex-1 items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
             <form className="ml-auto flex-1 sm:flex-initial">
@@ -292,7 +211,7 @@ export default function Component() {
                 <SearchIcon className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500 dark:text-gray-400" />
                 <Input
                   className="pl-8 sm:w-[300px] md:w-[200px] lg:w-[300px] bg-white"
-                  placeholder="     Search orders..."
+                  placeholder="     Search products..."
                   type="search"
                 />
               </div>
@@ -304,7 +223,7 @@ export default function Component() {
                     alt="Avatar"
                     className="rounded-full"
                     height="32"
-                    src="/placeholder.svg"
+                    src="/user-svgrepo-com.svg"
                     style={{
                       aspectRatio: "32/32",
                       objectFit: "cover",
@@ -326,194 +245,211 @@ export default function Component() {
           </div>
         </header>
         <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
+          <div className="grid gap-4 md:gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Insert Product</CardTitle>
+                <CardDescription>Enter the product details below</CardDescription>
+              </CardHeader>
+              <CardContent className="grid gap-4 md:gap-6">
+                <div className="grid gap-2">
+                  <Label className="text-base" htmlFor="category">
+                    Category
+                  </Label>
+                  <Select id="category" placeholder="Select a category">
+                    <SelectTrigger className="w-full">
+                      <SelectValue className="text-left" />
+                    </SelectTrigger>
+                    <SelectContent className="w-full">
+                      <SelectItem value="1">Electronics</SelectItem>
+                      <SelectItem value="2">Clothing</SelectItem>
+                      <SelectItem value="3">Books</SelectItem>
+                      <SelectItem value="4">Home & Garden</SelectItem>
+                      <SelectItem value="5">Health & Beauty</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid gap-2">
+                  <Label className="text-base" htmlFor="name">
+                    Name
+                  </Label>
+                  <Input id="name" placeholder="Enter the product name" required />
+                </div>
+                <div className="grid gap-2">
+                  <Label className="text-base" htmlFor="slug">
+                    Slug (for URL)
+                  </Label>
+                  <Input id="slug" placeholder="Enter the product slug" required />
+                </div>
+                <div className="grid gap-2">
+                  <Label className="text-base" htmlFor="price">
+                    Price
+                  </Label>
+                  <Input id="price" placeholder="Enter the product price" required type="number" />
+                </div>
+                <div className="grid gap-2">
+                  <Label className="text-base" htmlFor="inventory">
+                    Inventory
+                  </Label>
+                  <Input id="inventory" placeholder="Enter the product inventory" required type="number" />
+                </div>
+                <div className="grid gap-2">
+                  <Label className="text-base" htmlFor="description">
+                    Description
+                  </Label>
+                  <Textarea id="description" placeholder="Enter the product description" required />
+                </div>
+                <div className="grid gap-2">
+                  <Label className="text-base">Image</Label>
+                  <div className="border-2 border-dashed border-gray-200 rounded-lg p-6 flex flex-col items-center gap-1">
+                    <div className="pointer-events-none flex items-center gap-2 text-sm">
+                      <ImageIcon className="h-6 w-6 text-gray-400" />
+                      <span className="font-medium text-gray-500">Drag and drop your files here</span>
+                    </div>
+                    <span className="text-xs text-gray-500">or</span>
+                    <Button size="sm" variant="outline">
+                      <UploadIcon className="h-3 w-3 mr-1.5 -translate-y-0.5" />
+                      Browse
+                    </Button>
+                    <input className="hidden" type="file" />
+                  </div>
+                  <div className="border border-gray-200 rounded-lg p-4 grid gap-4 text-sm">
+                    <div className="flex items-center gap-2">
+                      <ImageIcon className="h-8 w-8 rounded-lg border border-gray-200 object-cover" />
+                      <div className="flex-1">
+                        <div className="font-medium">IMG_1234.jpg</div>
+                        <div className="text-xs text-gray-500">1.2MB</div>
+                      </div>
+                      <Button size="sm" variant="outline">
+                        <XIcon className="h-3 w-3" />
+                        Remove
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+              <CardFooter className="flex gap-4">
+                <Button>Insert</Button>
+                <Button variant="outline">Reset</Button>
+              </CardFooter>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>Insert Category</CardTitle>
+                <CardDescription>Enter the category details below</CardDescription>
+              </CardHeader>
+              <CardContent className="grid gap-4 md:gap-6">
+                <div className="grid gap-2">
+                  <Label className="text-base" htmlFor="category-name">
+                    Name
+                  </Label>
+                  <Input id="category-name" placeholder="Enter the category name" />
+                </div>
+                <div className="grid gap-2">
+                  <Label className="text-base" htmlFor="category-link">
+                    Link (for URL)
+                  </Label>
+                  <Input id="category-link" placeholder="Enter the product link" required />
+                </div>
+                <div className="grid gap-2">
+                  <Label className="text-base">Image</Label>
+                  <div className="border-2 border-dashed border-gray-200 rounded-lg p-6 flex flex-col items-center gap-1">
+                    <div className="pointer-events-none flex items-center gap-2 text-sm">
+                      <ImageIcon className="h-6 w-6 text-gray-400" />
+                      <span className="font-medium text-gray-500">Drag and drop your files here</span>
+                    </div>
+                    <span className="text-xs text-gray-500">or</span>
+                    <Button size="sm" variant="outline">
+                      <UploadIcon className="h-3 w-3 mr-1.5 -translate-y-0.5" />
+                      Browse
+                    </Button>
+                    <input className="hidden" type="file" />
+                  </div>
+                  <div className="border border-gray-200 rounded-lg p-4 grid gap-4 text-sm">
+                    <div className="flex items-center gap-2">
+                      <ImageIcon className="h-8 w-8 rounded-lg border border-gray-200 object-cover" />
+                      <div className="flex-1">
+                        <div className="font-medium">IMG_1234.jpg</div>
+                        <div className="text-xs text-gray-500">1.2MB</div>
+                      </div>
+                      <Button size="sm" variant="outline">
+                        <XIcon className="h-3 w-3" />
+                        Remove
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+              <CardFooter className="flex gap-4">
+                <Button>Insert</Button>
+                <Button variant="outline">Reset</Button>
+              </CardFooter>
+            </Card>
+          </div>
           <div className="border shadow-sm rounded-lg p-2">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[100px]">Order</TableHead>
-                  <TableHead className="min-w-[150px]">Customer</TableHead>
-                  <TableHead className="hidden md:table-cell">Channel</TableHead>
-                  <TableHead className="hidden md:table-cell">Date</TableHead>
-                  <TableHead className="text-right">Total</TableHead>
-                  <TableHead className="hidden sm:table-cell">Status</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableHead className="w-[80px]">Image</TableHead>
+                  <TableHead className="max-w-[150px]">Name</TableHead>
+                  <TableHead className="max-w-[150px]">Slug</TableHead>
+                  <TableHead>Description</TableHead>
+                  <TableHead>Price</TableHead>
+                  <TableHead>Inventory</TableHead>
+                  <TableHead>Category</TableHead>
+                  <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 <TableRow>
-                  <TableCell className="font-medium">#3210</TableCell>
-                  <TableCell>Olivia Martin</TableCell>
-                  <TableCell className="hidden md:table-cell">Online Store</TableCell>
-                  <TableCell className="hidden md:table-cell">February 20, 2022</TableCell>
-                  <TableCell className="text-right">$42.25</TableCell>
-                  <TableCell className="hidden sm:table-cell">Shipped</TableCell>
-                  <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button size="icon" variant="ghost">
-                          <MoreHorizontalIcon className="w-4 h-4" />
-                          <span className="sr-only">Actions</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem>View order</DropdownMenuItem>
-                        <DropdownMenuItem>Customer details</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                  <TableCell>
+                    <img
+                      alt=""
+                      className="aspect-square rounded-md object-cover"
+                      height="64"
+                      src=""
+                      width="64"
+                    />
                   </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell className="font-medium">#3209</TableCell>
-                  <TableCell>Ava Johnson</TableCell>
-                  <TableCell className="hidden md:table-cell">Shop</TableCell>
-                  <TableCell className="hidden md:table-cell">January 5, 2022</TableCell>
-                  <TableCell className="text-right">$74.99</TableCell>
-                  <TableCell className="hidden sm:table-cell">Paid</TableCell>
-                  <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button size="icon" variant="ghost">
-                          <MoreHorizontalIcon className="w-4 h-4" />
-                          <span className="sr-only">Actions</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem>View order</DropdownMenuItem>
-                        <DropdownMenuItem>Customer details</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                  <TableCell className="font-medium">
+                    <Input id="name" defaultValue="Glimmer Lamps" required />
                   </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell className="font-medium">#3204</TableCell>
-                  <TableCell>Michael Johnson</TableCell>
-                  <TableCell className="hidden md:table-cell">Shop</TableCell>
-                  <TableCell className="hidden md:table-cell">August 3, 2021</TableCell>
-                  <TableCell className="text-right">$64.75</TableCell>
-                  <TableCell className="hidden sm:table-cell">Unfulfilled</TableCell>
-                  <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button size="icon" variant="ghost">
-                          <MoreHorizontalIcon className="w-4 h-4" />
-                          <span className="sr-only">Actions</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem>View order</DropdownMenuItem>
-                        <DropdownMenuItem>Customer details</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                  <TableCell className="font-medium">
+                    <Input id="slug" defaultValue="Glimmer-Lamps" required />
                   </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell className="font-medium">#3203</TableCell>
-                  <TableCell>Lisa Anderson</TableCell>
-                  <TableCell className="hidden md:table-cell">Online Store</TableCell>
-                  <TableCell className="hidden md:table-cell">July 15, 2021</TableCell>
-                  <TableCell className="text-right">$34.50</TableCell>
-                  <TableCell className="hidden sm:table-cell">Shipped</TableCell>
-                  <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button size="icon" variant="ghost">
-                          <MoreHorizontalIcon className="w-4 h-4" />
-                          <span className="sr-only">Actions</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem>View order</DropdownMenuItem>
-                        <DropdownMenuItem>Customer details</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                  <TableCell className="truncate">
+                    <Input id="description" defaultValue="testing" required />
                   </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell className="font-medium">#3202</TableCell>
-                  <TableCell>Samantha Green</TableCell>
-                  <TableCell className="hidden md:table-cell">Shop</TableCell>
-                  <TableCell className="hidden md:table-cell">June 5, 2021</TableCell>
-                  <TableCell className="text-right">$89.99</TableCell>
-                  <TableCell className="hidden sm:table-cell">Paid</TableCell>
-                  <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button size="icon" variant="ghost">
-                          <MoreHorizontalIcon className="w-4 h-4" />
-                          <span className="sr-only">Actions</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem>View order</DropdownMenuItem>
-                        <DropdownMenuItem>Customer details</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                  <TableCell>
+                    <Input id="price" defaultValue="99" required type="number" />
                   </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell className="font-medium">#3201</TableCell>
-                  <TableCell>Adam Barlow</TableCell>
-                  <TableCell className="hidden md:table-cell">Online Store</TableCell>
-                  <TableCell className="hidden md:table-cell">May 20, 2021</TableCell>
-                  <TableCell className="text-right">$24.99</TableCell>
-                  <TableCell className="hidden sm:table-cell">Unfulfilled</TableCell>
-                  <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button size="icon" variant="ghost">
-                          <MoreHorizontalIcon className="w-4 h-4" />
-                          <span className="sr-only">Actions</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem>View order</DropdownMenuItem>
-                        <DropdownMenuItem>Customer details</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                  <TableCell>
+                    <Input id="inventory" defaultValue="500" required type="number" />
                   </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell className="font-medium">#3207</TableCell>
-                  <TableCell>Sophia Anderson</TableCell>
-                  <TableCell className="hidden md:table-cell">Shop</TableCell>
-                  <TableCell className="hidden md:table-cell">November 2, 2021</TableCell>
-                  <TableCell className="text-right">$99.99</TableCell>
-                  <TableCell className="hidden sm:table-cell">Paid</TableCell>
-                  <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button size="icon" variant="ghost">
-                          <MoreHorizontalIcon className="w-4 h-4" />
-                          <span className="sr-only">Actions</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem>View order</DropdownMenuItem>
-                        <DropdownMenuItem>Customer details</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+
+                  <TableCell>
+                    <Select defaultValue="1">
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="1">Electronics</SelectItem>
+                        <SelectItem value="2">Clothing</SelectItem>
+                        <SelectItem value="3">Books</SelectItem>
+                        <SelectItem value="4">Home & Garden</SelectItem>
+                        <SelectItem value="5">Health & Beauty</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell className="font-medium">#3206</TableCell>
-                  <TableCell>Daniel Smith</TableCell>
-                  <TableCell className="hidden md:table-cell">Online Store</TableCell>
-                  <TableCell className="hidden md:table-cell">October 7, 2021</TableCell>
-                  <TableCell className="text-right">$67.50</TableCell>
-                  <TableCell className="hidden sm:table-cell">Shipped</TableCell>
-                  <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button size="icon" variant="ghost">
-                          <MoreHorizontalIcon className="w-4 h-4" />
-                          <span className="sr-only">Actions</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem>View order</DropdownMenuItem>
-                        <DropdownMenuItem>Customer details</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                  <TableCell>
+                    <Button size="sm" variant="outline">
+                      <UploadIcon className="h-3 w-3" />
+                      Save
+                    </Button>
+                    <Button size="sm" variant="outline">
+                      <XIcon className="h-3 w-3" />
+                      Delete
+                    </Button>
                   </TableCell>
                 </TableRow>
               </TableBody>
@@ -695,6 +631,70 @@ function UsersIcon(props) {
       <circle cx="9" cy="7" r="4" />
       <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
       <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+    </svg>
+  )
+}
+
+
+function ImageIcon(props) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+      <circle cx="9" cy="9" r="2" />
+      <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+    </svg>
+  )
+}
+
+function UploadIcon(props) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+      <polyline points="17 8 12 3 7 8" />
+      <line x1="12" x2="12" y1="3" y2="15" />
+    </svg>
+  )
+}
+
+
+function XIcon(props) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M18 6 6 18" />
+      <path d="m6 6 12 12" />
     </svg>
   )
 }
