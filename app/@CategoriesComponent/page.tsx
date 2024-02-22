@@ -3,15 +3,48 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { categories } from '@/app/(data)/data';
+import axios from 'axios';
 import "@/app/globals.css"
 
+interface Category {
+    id: number;
+    name: string;
+    link: string;
+    image: string;
+    products?: Product[];
+}
+
+interface Product {
+    id: number;
+    name: string;
+    slug: string;
+    price: number;
+    inventory: number;
+    description: string;
+    categoryId: number;
+    image: string;
+    Category: Category;
+}
+
 const CategoriesComponent: React.FC = () => {
+    const [categories, setCategories] = useState<Category[]>([]);
     const [hoveredCategoryIndex, setHoveredCategoryIndex] = useState<number | null>(null);
 
-    // Reset hoveredCategoryIndex when component re-renders
     useEffect(() => {
         setHoveredCategoryIndex(null);
+    }, []);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const { data } = await axios.get('/api/categories');
+                setCategories(data);
+            } catch (error) {
+                console.error('Failed to fetch categories:', error);
+            }
+        };
+
+        fetchCategories();
     }, []);
 
     return (
@@ -21,8 +54,8 @@ const CategoriesComponent: React.FC = () => {
                 <div className="row g-2">
                     {categories.map((category, index) => {
                         const isHovered = index === hoveredCategoryIndex;
-                        const bgImageName = `image${(index % 3) + 1}x${Math.floor(index / 3) + 1}.png`;
-                        const bgImage = isHovered ? category.image : bgImageName;
+                        const bgImageName = index < 9 ? `image${(index % 3) + 1}x${Math.floor(index / 3) + 1}.png` : null;
+                        const bgImage = isHovered || !bgImageName ? category.image : bgImageName;
 
                         return (
                             <div key={index} className="col-4 col-md-4">
@@ -48,6 +81,7 @@ const CategoriesComponent: React.FC = () => {
                             </div>
                         );
                     })}
+
                 </div>
             </div>
         </div>

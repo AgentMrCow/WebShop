@@ -1,7 +1,8 @@
 // @/app/category/[category]/page.tsx
-import React from 'react';
+"use client"
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { products } from '@/app/(data)/data';
+import axios from 'axios';
 import AddToCartButton from '@/app/(component)/AddToCartButton';
 import Breadcrumbs from '@/app/(component)/breadcrumbs';
 import QuantitySelector from '@/app/@QuantitySelector/page';
@@ -13,10 +14,50 @@ type Params = {
     };
 };
 
+interface Category {
+    id: number;
+    name: string;
+    link: string;
+    image: string;
+    products?: Product[];
+}
+
+interface Product {
+    id: number;
+    name: string;
+    slug: string;
+    price: number;
+    inventory: number;
+    description: string;
+    categoryId: number;
+    image: string;
+    Category: Category;
+}
+
+
 const CategoryPage: React.FC<Params> = ({ params }) => {
     const { category } = params;
+    const [products, setProducts] = useState<Product[]>([]);
+    const [loading, setLoading] = useState(true);
 
-    // Function to capitalize the first letter of each word
+    useEffect(() => {
+        const fetchProducts = async () => {
+            setLoading(true);
+            try {
+                const response = await axios.get<Product[]>('/api/products');
+                const filteredProducts = response.data.filter(p => p.Category.name.toLowerCase() === category.toLowerCase());
+                setProducts(filteredProducts);
+            } catch (error) {
+                console.error('Failed to fetch products:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProducts();
+    }, [category]);
+
+
     const capitalizeWords = (string: string) =>
         string
             .split('-')
@@ -25,12 +66,14 @@ const CategoryPage: React.FC<Params> = ({ params }) => {
 
     const capitalizedCategory = capitalizeWords(category);
 
-    const filteredProducts = products.filter(p => p.category.toLowerCase() === category.toLowerCase());
-
     const breadcrumbs = [
         { label: 'Home', path: '/' },
         { label: capitalizedCategory },
     ];
+
+    if (loading) {
+        return <div>Loading...</div>;
+    }
 
     return (
         <>
@@ -38,17 +81,16 @@ const CategoryPage: React.FC<Params> = ({ params }) => {
             <div className="row">
                 <h2 className="mb-4">{capitalizedCategory}</h2>
                 <div className="row">
-                    {filteredProducts.map((product) => {
-
+                    {products.map((product) => {
                         return (
                             <div key={product.id} className="col-md-4 mb-4">
                                 <div className="card h-100">
-                                    <Link href={`/category/${category}/${product.slug}`} passHref className="text-decoration-none">
-                                        <img src={product.thumbnail} className="card-img-top" alt={product.name} />
+                                    <Link href={`/category/${category}/${product.slug}`} passHref>
+                                        <img src={product.image} className="card-img-top" alt={product.name} />
                                     </Link>
                                     <div className="card-body">
                                         <div className="d-flex justify-content-between align-items-center">
-                                            <Link href={`/category/${category}/${product.slug}`} passHref className="text-decoration-none">
+                                            <Link href={`/category/${category}/${product.slug}`} passHref>
                                                 <h5 className="card-title">{product.name}</h5>
                                             </Link>
                                             <div className="d-flex align-items-center">
@@ -62,7 +104,6 @@ const CategoryPage: React.FC<Params> = ({ params }) => {
                                     </div>
                                 </div>
                             </div>
-
                         );
                     })}
                 </div>
@@ -72,4 +113,3 @@ const CategoryPage: React.FC<Params> = ({ params }) => {
 };
 
 export default CategoryPage;
-

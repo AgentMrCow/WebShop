@@ -1,11 +1,32 @@
 // @/app/category/[category]/[slug]/page.tsx
-import React from 'react';
-import { products } from '@/app/(data)/data';
+"use client"
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import Breadcrumbs from '@/app/(component)/breadcrumbs';
 import AddToCartButton from '@/app/(component)/AddToCartButton';
 import QuantitySelector from '@/app/@QuantitySelector/page';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '@/app/globals.css';
+
+interface Category {
+  id: number;
+  name: string;
+  link: string;
+  image: string;
+  products?: Product[];
+}
+
+interface Product {
+  id: number;
+  name: string;
+  slug: string;
+  price: number;
+  inventory: number;
+  description: string;
+  categoryId: number;
+  image: string;
+  Category: Category;
+}
 
 type Params = {
   params: {
@@ -16,14 +37,33 @@ type Params = {
 
 const ProductPage: React.FC<Params> = ({ params }) => {
   const { category, slug } = params;
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  // Renamed 'productDetails' to 'product'
-  const product = products.find(p => p.slug === slug);
+  useEffect(() => {
+    const fetchProduct = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get<Product>(`/api/${slug}`);
+        setProduct(response.data);
+      } catch (error) {
+        console.error('Failed to fetch product:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, [slug]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   if (!product) {
     return <div className="container mt-5"><p>Product not found.</p></div>;
   }
 
-  // Ensure the category string is capitalized and URL friendly
   const capitalizeFirstLetter = (string: string) => string.charAt(0).toUpperCase() + string.slice(1);
   const capitalizedCategory = category ? capitalizeFirstLetter(category.replace(/-/g, ' ')) : '';
 
@@ -38,14 +78,14 @@ const ProductPage: React.FC<Params> = ({ params }) => {
       <Breadcrumbs breadcrumbs={breadcrumbs} />
       <div className="row">
         <div className="col-md-6">
-          <img src={product.thumbnail} alt={product.name} className="img-fluid" />
+          <img src={product.image} alt={product.name} className="img-fluid" />
         </div>
         <div className="col-md-6">
           <h2>{product.name}</h2>
           <p className="lead">{product.description}</p>
           <p className="h4">${product.price}</p>
           {product.inventory <= 3 ? (
-            <p className="text-danger">Only {product.inventory} left!</p> 
+            <p className="text-danger">Only {product.inventory} left!</p>
           ) : (
             <p>In stock: {product.inventory}</p>
           )}

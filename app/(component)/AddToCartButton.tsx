@@ -2,7 +2,26 @@
 "use client"
 import React from 'react';
 import { useShoppingCart } from '@/app/(component)/ShoppingCart';
-import { Product } from '@/app/(data)/data';
+
+interface Category {
+    id: number;
+    name: string;
+    link: string;
+    image: string;
+    products?: Product[];
+  }
+  
+  interface Product {
+    id: number;
+    name: string;
+    slug: string;
+    price: number;
+    inventory: number;
+    description: string;
+    categoryId: number;
+    image: string;
+    Category: Category;
+  }
 
 interface AddToCartButtonProps {
     product: Product;
