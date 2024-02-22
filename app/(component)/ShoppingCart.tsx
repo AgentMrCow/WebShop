@@ -1,10 +1,29 @@
 // @/app/(component)/ShoppingCart.tsx
 "use client"
-import React, { createContext, useContext, useState, useRef, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useRef, useEffect, ReactNode } from 'react';
 import Link from 'next/link';
 import { Popover, Button, OverlayTrigger, Form } from 'react-bootstrap';
-import { Product, products } from '@/app/(data)/data';
-import { categories } from '@/app/(data)/data';
+import axios from 'axios';
+
+interface Category {
+    id: number;
+    name: string;
+    link: string;
+    image: string;
+    products?: Product[];
+}
+
+interface Product {
+    id: number;
+    name: string;
+    slug: string;
+    price: number;
+    inventory: number;
+    description: string;
+    categoryId: number;
+    image: string;
+    Category: Category;
+}
 
 interface ShoppingCartContextType {
     cartItems: Product[];
@@ -94,7 +113,7 @@ export const ShoppingCart: React.FC = () => {
                 ) : (
                     cartItems.map((item) => (
                         <div key={item.id} className="d-flex justify-content-between align-items-center mb-2">
-                            <img src={item.thumbnail} alt={item.name} className="w-25 h-auto" />
+                            <img src={item.image} alt={item.name} className="w-25 h-auto" />
                             <div className="mx-2">{item.name}</div>
                             <Form.Control
                                 type="number"
@@ -140,7 +159,7 @@ export const ShoppingCart: React.FC = () => {
     );
 };
 
-const CategoryItem = ({ category }: { category: Category }) => {
+const CategoryItem = ({ category, products }: { category: Category; products: Product[] }) => {
     const [showPopover, setShowPopover] = useState(false);
     const clearHideTimeout = useRef<number | undefined>(undefined);
 
@@ -168,9 +187,10 @@ const CategoryItem = ({ category }: { category: Category }) => {
                         onMouseEnter={handleMouseEnter}
                         onMouseLeave={handleMouseLeave}
                     >
-                        {products.filter(product => product.category === category.name).map((product, prodIndex) => (
+                        {products.filter(product => product.Category.name === category.name).map((product, prodIndex) => (
                             <Link key={prodIndex} href={`/category/${category.name.toLowerCase()}/${product.slug}`} passHref className="dropdown-item">{product.name}</Link>
                         ))}
+
                     </Popover.Body>
                 </Popover>
             }
@@ -189,6 +209,33 @@ const CategoryItem = ({ category }: { category: Category }) => {
 };
 
 const ShoppingCartComponentWithProvider: React.FC = () => {
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [products, setProducts] = useState<Product[]>([]);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const { data } = await axios.get('/api/categories');
+                setCategories(data);
+            } catch (error) {
+                console.error('Failed to fetch categories:', error);
+            }
+        };
+        fetchCategories();
+    }, []);
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const { data } = await axios.get('/api/products');
+                setProducts(data);
+            } catch (error) {
+                console.error('Failed to fetch products:', error);
+            }
+        };
+        fetchProducts();
+    }, []);
+
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
             <div className="container-fluid">
@@ -196,7 +243,8 @@ const ShoppingCartComponentWithProvider: React.FC = () => {
                 <div className="navbar-collapse" id="navbarNav">
                     <ul className="navbar-nav">
                         {categories.map((category, index) => (
-                            <CategoryItem key={index} category={category} />
+                            <CategoryItem key={index} category={category} products={products} />
+
                         ))}
                     </ul>
                 </div>
