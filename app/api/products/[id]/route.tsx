@@ -2,6 +2,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+export const dynamic = 'force-dynamic'
 
 const prisma = new PrismaClient();
 
@@ -20,10 +21,31 @@ export async function POST(request: NextRequest) {
     }
 }
 
-export async function GET(request: NextRequest) {
+export async function GET(
+    request: NextRequest,
+    { params }: { params: { id: string } }
+) {
+    const productId = parseInt(params.id, 10);
+
+    if (isNaN(productId)) {
+        return new NextResponse(JSON.stringify({ error: 'Invalid product ID'+params.id }), { status: 400, headers: { "Content-Type": "application/json" } });
+    }
+
     try {
+        const product = await prisma.product.findUnique({
+            where: {
+                id: productId,
+            },
+            include: {
+                Category: true,
+            },
+        });
 
+        if (!product) {
+            return new NextResponse(JSON.stringify({ error: 'Product not found' }), { status: 404, headers: { "Content-Type": "application/json" } });
+        }
 
+        return new NextResponse(JSON.stringify(product), { status: 200, headers: { "Content-Type": "application/json" } });
     } catch (error: unknown) {
         if (error instanceof Error) {
             console.error('[PRODUCT_ID_GET]', error);

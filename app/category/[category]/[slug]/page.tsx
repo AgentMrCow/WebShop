@@ -2,31 +2,12 @@
 "use client"
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import Image from 'next/image';
 import Breadcrumbs from '@/app/(component)/breadcrumbs';
 import AddToCartButton from '@/app/(component)/AddToCartButton';
-import QuantitySelector from '@/app/@QuantitySelector/page';
+import QuantitySelector from '@/app/(component)/QuantitySelector';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '@/app/globals.css';
-
-interface Category {
-  id: number;
-  name: string;
-  link: string;
-  image: string;
-  products?: Product[];
-}
-
-interface Product {
-  id: number;
-  name: string;
-  slug: string;
-  price: number;
-  inventory: number;
-  description: string;
-  categoryId: number;
-  image: string;
-  Category: Category;
-}
 
 type Params = {
   params: {
@@ -39,6 +20,7 @@ const ProductPage: React.FC<Params> = ({ params }) => {
   const { category, slug } = params;
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
+  const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -78,7 +60,7 @@ const ProductPage: React.FC<Params> = ({ params }) => {
       <Breadcrumbs breadcrumbs={breadcrumbs} />
       <div className="row">
         <div className="col-md-6">
-          <img src={product.image} alt={product.name} className="img-fluid" />
+          <Image src={product.image} className="card-img-top" alt={product.name} width={1024} height={1024} />
         </div>
         <div className="col-md-6">
           <h2>{product.name}</h2>
@@ -89,8 +71,8 @@ const ProductPage: React.FC<Params> = ({ params }) => {
           ) : (
             <p>In stock: {product.inventory}</p>
           )}
-          <AddToCartButton product={product} />
-          <QuantitySelector />
+          <QuantitySelector quantity={quantity} onQuantityChange={setQuantity} />
+          <AddToCartButton product={product} quantity={quantity} />
         </div>
       </div>
     </>

@@ -6,26 +6,6 @@ import { motion } from 'framer-motion';
 import axios from 'axios';
 import "@/app/globals.css"
 
-interface Category {
-    id: number;
-    name: string;
-    link: string;
-    image: string;
-    products?: Product[];
-}
-
-interface Product {
-    id: number;
-    name: string;
-    slug: string;
-    price: number;
-    inventory: number;
-    description: string;
-    categoryId: number;
-    image: string;
-    Category: Category;
-}
-
 const CategoriesComponent: React.FC = () => {
     const [categories, setCategories] = useState<Category[]>([]);
     const [hoveredCategoryIndex, setHoveredCategoryIndex] = useState<number | null>(null);
