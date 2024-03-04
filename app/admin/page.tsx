@@ -7,6 +7,7 @@ import axios from 'axios';
 import { writeFile } from 'fs/promises'
 import { join } from 'path'
 import Link from "next/link"
+import Image from 'next/image';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -22,26 +23,6 @@ import { TableHead, TableRow, TableHeader, TableCell, TableBody, Table } from "@
 import { SelectValue, SelectTrigger, SelectItem, SelectContent, Select } from "@/components/ui/select"
 import { CardTitle, CardDescription, CardHeader, CardContent, CardFooter, Card } from "@/components/ui/card"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-
-interface Category {
-  id: number;
-  name: string;
-  link: string;
-  image: string;
-  products?: Product[];
-}
-
-interface Product {
-  id: number;
-  name: string;
-  slug: string;
-  price: number;
-  inventory: number;
-  description: string;
-  categoryId: number;
-  image: string;
-  Category: Category;
-}
 
 interface ProductRowProps {
   product: Product;
@@ -220,7 +201,9 @@ const ProductRow = ({ product, onUpdate, onDelete, categories }: ProductRowProps
     <TableRow key={product.id}>
       <TableCell>{product.id}</TableCell>
       <TableCell>
-        <img src={imagePreview} alt={product.name} style={{ width: '50px', height: '50px' }} />
+        <div style={{ width: '50px', height: '50px', position: 'relative' }}>
+          <Image src={imagePreview} alt={product.name} layout='fill' objectFit='cover' />
+        </div>
         <Input type="file" accept="image/png image/gif, image/jpg, image/jpeg" {...register('image')} />
       </TableCell>
       <TableCell>
@@ -322,7 +305,9 @@ const CategoryRow = ({ category, handleCategoryUpdate, handleCategoryDelete }: C
     <TableRow>
       <TableCell>{category.id}</TableCell>
       <TableCell>
-        <img src={imagePreview} alt={category.name} style={{ width: '50px', height: '50px' }} />
+        <div style={{ width: '50px', height: '50px', position: 'relative' }}>
+          <Image src={imagePreview} alt={category.name} layout='fill' objectFit='cover' />
+        </div>
         <Input type="file" accept="image/png image/gif, image/jpg, image/jpeg" {...register('image')} />
       </TableCell>
       <TableCell>
@@ -412,7 +397,9 @@ const ImageUploadField: React.FC<ImageUploadFieldProps & { imagePreview: string,
           style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '200px' }}
         >
           {imagePreview ? (
-            <img src={imagePreview} alt="Preview" className="mx-auto h-40" />
+            <div className="relative mx-auto h-40 w-full">
+              <Image src={imagePreview} alt="Preview" layout="fill" objectFit="contain" />
+            </div>
           ) : (
             <div>
               <div className="pointer-events-none flex items-center gap-2 text-sm">

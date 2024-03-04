@@ -2,15 +2,6 @@
 import React from 'react';
 import Link from 'next/link';
 
-interface BreadcrumbItem {
-    label: string;
-    path?: string;
-}
-
-interface BreadcrumbsProps {
-    breadcrumbs: BreadcrumbItem[];
-}
-
 const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ breadcrumbs = [] }) => {
     return (
         <nav aria-label="breadcrumb">
