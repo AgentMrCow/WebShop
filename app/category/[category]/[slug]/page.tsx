@@ -60,7 +60,7 @@ const ProductPage: React.FC<Params> = ({ params }) => {
       <Breadcrumbs breadcrumbs={breadcrumbs} />
       <div className="row">
         <div className="col-md-6">
-          <Image src={product.image} className="card-img-top" alt={product.name} width={1024} height={1024} />
+          <Image src={product.image} className="card-img-top" alt={product.name} width={1024} height={1024} priority />
         </div>
         <div className="col-md-6">
           <h2>{product.name}</h2>
