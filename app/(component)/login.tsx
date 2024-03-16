@@ -1,4 +1,5 @@
 // @/app/(component)/login.tsx
+import Link from 'next/link';
 import { CardTitle, CardDescription, CardHeader, CardContent, CardFooter, Card } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
@@ -13,8 +14,8 @@ export default function Component() {
             </CardHeader>
             <CardContent className="space-y-4">
                 <div className="space-y-2">
-                    <Label htmlFor="username">Username</Label>
-                    <Input id="username" placeholder="Username" required />
+                    <Label htmlFor="email">Email</Label>
+                    <Input id="email" placeholder="Email" required />
                 </div>
                 <div className="space-y-2">
                     <Label htmlFor="password">Password</Label>
@@ -22,9 +23,11 @@ export default function Component() {
                 </div>
             </CardContent>
             <CardFooter className="flex">
-                <Button className="ml-auto" type="submit">
-                    Login
-                </Button>
+                <Link href="/admin" passHref>
+                    <Button className="ml-auto" type="submit">
+                        Login
+                    </Button>
+                </Link>
             </CardFooter>
         </Card>
     )

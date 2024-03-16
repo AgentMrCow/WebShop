@@ -202,7 +202,7 @@ const ProductRow = ({ product, onUpdate, onDelete, categories }: ProductRowProps
       <TableCell>{product.id}</TableCell>
       <TableCell>
         <div style={{ width: '50px', height: '50px', position: 'relative' }}>
-          <Image src={imagePreview} alt={product.name} layout='fill' objectFit='cover' />
+          <Image src={imagePreview} alt={product.name} sizes="100%" fill style={{ objectFit: 'cover' }} />
         </div>
         <Input type="file" accept="image/png image/gif, image/jpg, image/jpeg" {...register('image')} />
       </TableCell>
@@ -306,7 +306,7 @@ const CategoryRow = ({ category, handleCategoryUpdate, handleCategoryDelete }: C
       <TableCell>{category.id}</TableCell>
       <TableCell>
         <div style={{ width: '50px', height: '50px', position: 'relative' }}>
-          <Image src={imagePreview} alt={category.name} layout='fill' objectFit='cover' />
+          <Image src={imagePreview} alt={category.name} sizes="100%" fill style={{ objectFit: 'cover' }} />
         </div>
         <Input type="file" accept="image/png image/gif, image/jpg, image/jpeg" {...register('image')} />
       </TableCell>
@@ -398,7 +398,7 @@ const ImageUploadField: React.FC<ImageUploadFieldProps & { imagePreview: string,
         >
           {imagePreview ? (
             <div className="relative mx-auto h-40 w-full">
-              <Image src={imagePreview} alt="Preview" layout="fill" objectFit="contain" />
+              <Image src={imagePreview} alt="Preview" sizes="100%" fill style={{ objectFit: 'contain' }} />
             </div>
           ) : (
             <div>
