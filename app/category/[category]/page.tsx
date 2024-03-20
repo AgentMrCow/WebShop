@@ -7,7 +7,8 @@ import axios from 'axios';
 import AddToCartButton from '@/app/(component)/AddToCartButton';
 import Breadcrumbs from '@/app/(component)/breadcrumbs';
 import QuantitySelector from '@/app/(component)/QuantitySelector';
-import '@/app/globals.css';
+import { Card, CardContent, CardHeader, CardFooter, CardTitle, CardDescription } from "@/components/ui/card";
+import { toast } from "@/components/ui/use-toast"
 
 type Params = {
     params: {
@@ -29,7 +30,10 @@ const CategoryPage: React.FC<Params> = ({ params }) => {
                 const filteredProducts = response.data.filter(p => p.Category.name.toLowerCase() === category.toLowerCase());
                 setProducts(filteredProducts);
             } catch (error) {
-                console.error('Failed to fetch products:', error);
+                toast({
+                    title: "Failed to fetch products",
+                    description: `${error}`,
+                });
             } finally {
                 setLoading(false);
             }
@@ -38,18 +42,11 @@ const CategoryPage: React.FC<Params> = ({ params }) => {
         fetchProducts();
     }, [category]);
 
-
-    const capitalizeWords = (string: string) =>
-        string
-            .split('-')
-            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-            .join(' ');
-
-    const capitalizedCategory = capitalizeWords(category);
+    const categoryName = products.length > 0 ? products[0].Category.name : category;
 
     const breadcrumbs = [
         { label: 'Home', path: '/' },
-        { label: capitalizedCategory },
+        { label: categoryName },
     ];
 
     if (loading) {
@@ -63,40 +60,34 @@ const CategoryPage: React.FC<Params> = ({ params }) => {
     return (
         <>
             <Breadcrumbs breadcrumbs={breadcrumbs} />
-            <div className="row">
-                <h2 className="mb-4">{capitalizedCategory}</h2>
-                <div className="row">
-                    {products.map((product) => {
-                        const quantity = quantities[product.id] || 1;
-
-                        return (
-                            <div key={product.id} className="col-md-4 mb-4">
-                                <div className="card h-100">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <h2 className="mb-4 col-span-full">{categoryName}</h2>
+                {products.map((product) => {
+                    const quantity = quantities[product.id] || 1;
+                    return (
+                        <Card key={product.id} className="h-full">
+                            <CardHeader className="p-0">
+                                <Link href={`/category/${category}/${product.slug}`} passHref>
+                                    <Image src={product.image} alt={product.name} width={1024} height={1024} layout="responsive" />
+                                </Link>
+                            </CardHeader>
+                            <CardContent className="pt-4 flex">
+                                <CardTitle>
                                     <Link href={`/category/${category}/${product.slug}`} passHref>
-                                        <Image src={product.image} className="card-img-top" alt={product.name} width={1024} height={1024} />
+                                        <h5 className="text-lg">{product.name}</h5>
                                     </Link>
-                                    <div className="card-body">
-                                        <div className="d-flex justify-content-between align-items-center">
-                                            <Link href={`/category/${category}/${product.slug}`} passHref>
-                                                <h5 className="card-title">{product.name}</h5>
-                                            </Link>
-                                            <div className="d-flex align-items-center">
-                                                <QuantitySelector
-                                                    quantity={quantity}
-                                                    onQuantityChange={(newQuantity) => handleQuantityChange(product.id, newQuantity)}
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="mt-3 d-flex justify-content-between align-items-center">
-                                            <p className="card-text mb-0">${product.price}</p>
-                                            <AddToCartButton product={product} quantity={quantity} />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
+                                </CardTitle>
+                                <CardDescription className="ml-auto pt-1">
+                                    ${product.price}
+                                </CardDescription>
+                            </CardContent>
+                            <CardFooter>
+                                <QuantitySelector quantity={quantity} onQuantityChange={(newQuantity) => handleQuantityChange(product.id, newQuantity)} />
+                                <AddToCartButton product={product} quantity={quantity} />
+                            </CardFooter>
+                        </Card>
+                    );
+                })}
             </div>
         </>
     );

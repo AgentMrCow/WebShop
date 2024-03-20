@@ -1,17 +1,68 @@
 // @/prisma/seed.ts
 
 const { PrismaClient } = require('@prisma/client');
+const bcrypt = require('bcrypt');
 
 const prisma = new PrismaClient();
 
 async function main() {
-    // Delete all existing categories and products
+    // Delete all existing users, categories and products
+    await prisma.user.deleteMany({});
     await prisma.product.deleteMany({});
     await prisma.category.deleteMany({});
+    
     // Reset autoincrement ID counters
+    await prisma.$executeRawUnsafe('DELETE FROM sqlite_sequence WHERE name="User"');
     await prisma.$executeRawUnsafe('DELETE FROM sqlite_sequence WHERE name="Category"');
     await prisma.$executeRawUnsafe('DELETE FROM sqlite_sequence WHERE name="Product"');
     await prisma.$executeRawUnsafe('VACUUM');
+
+    // Define users
+    const users = [
+        {
+            email: "khzhang@ie.cuhk.edu.hk",
+            password: "Prof_4210",
+            isAdmin: true,
+        },
+        {
+            email: "zj021@ie.cuhk.edu.hk",
+            password: "Jiuqin_4210",
+            isAdmin: true,
+        },
+        {
+            email: "zy319@ie.cuhk.edu.hk",
+            password: "Yutong_4210",
+            isAdmin: true,
+        },
+        {
+            email: "cl022@ie.cuhk.edu.hk",
+            password: "Lin_4210",
+            isAdmin: true,
+        },
+        {
+            email: "1155174712@link.cuhk.edu.hk",
+            password: "Niu_4210",
+            isAdmin: false,
+        },
+        {
+            email: "4210@security.com",
+            password: "with_0_XSS",
+            isAdmin: false,
+        },
+    ];
+
+    // Insert new users
+    for (const user of users) {
+        const hashedPassword = await bcrypt.hash(user.password, 10);
+        await prisma.user.create({
+            data: {
+                email: user.email,
+                password: hashedPassword,
+                isAdmin: user.isAdmin,
+            },
+        });
+    }
+
     // Define categories
     const categories = [
         { name: 'Apparel', image: '/apparel.png', link: '/category/apparel' },

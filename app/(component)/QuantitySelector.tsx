@@ -1,6 +1,8 @@
 // @/app/(component)/QuantitySelector.tsx
 "use client"
 import React, { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 const QuantitySelector: React.FC<QuantitySelectorProps> = ({ quantity, onQuantityChange }) => {
     const [localQuantity, setLocalQuantity] = useState(quantity);
@@ -28,19 +30,20 @@ const QuantitySelector: React.FC<QuantitySelectorProps> = ({ quantity, onQuantit
     };
 
     return (
-        <div className="d-flex align-items-center">
-            <button className="btn btn-outline-secondary btn-sm" onClick={handleDecrement}>-</button>
-            <input
+        <div className="flex items-center">
+            <Button onClick={handleDecrement} variant={"outline"} className="px-2 py-1 text-sm">-</Button>
+            <Input
                 type="number"
-                className="form-control mx-2"
+                className="mx-2 text-center w-16 text-sm py-1"
                 value={localQuantity}
                 onChange={handleQuantityChange}
                 min="1"
-                style={{ width: '60px', textAlign: 'center' }}
             />
-            <button className="btn btn-outline-secondary btn-sm" onClick={handleIncrement}>+</button>
+            <Button onClick={handleIncrement} variant={"outline"} className="px-2 py-1 text-sm">+</Button>
+
         </div>
     );
 };
+
 
 export default QuantitySelector;

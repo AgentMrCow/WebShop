@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import axios from 'axios';
 import ShoppingCartPage from '@/app/(component)/ShoppingCart';
-import LoginPage from '@/app/(component)/login';
+import LoginComponent from '@/app/(component)/login';
 import {
     NavigationMenu,
     NavigationMenuList,
@@ -21,15 +21,17 @@ import {
     CarouselNext,
     CarouselPrevious,
 } from "@/components/ui/carousel"
-import { Card, CardContent } from "@/components/ui/card"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import Autoplay from "embla-carousel-autoplay"
+import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem, CommandSeparator, CommandShortcut } from "@/components/ui/command";
+import { toast } from "@/components/ui/use-toast"
 
 
 
 const Header = () => {
     const [categories, setCategories] = useState<Category[]>([]);
     const [products, setProducts] = useState<Product[]>([]);
+    const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -37,23 +39,31 @@ const Header = () => {
                 const { data } = await axios.get('/api/categories');
                 setCategories(data);
             } catch (error) {
-                console.error('Failed to fetch categories:', error);
+                toast({
+                    title: "Failed to fetch categories",
+                    description: `${error}`,
+                });
             }
         };
-        fetchCategories();
-    }, []);
 
-    useEffect(() => {
         const fetchProducts = async () => {
             try {
                 const { data } = await axios.get('/api/products');
                 setProducts(data);
             } catch (error) {
-                console.error('Failed to fetch products:', error);
+                toast({
+                    title: "Failed to fetch products",
+                    description: `${error}`,
+                });
             }
         };
+
+        fetchCategories();
         fetchProducts();
     }, []);
+
+
+    const filteredProducts = products.filter(product => product.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
     return (
         <header className="bg-white shadow-sm">
@@ -79,14 +89,38 @@ const Header = () => {
                 </NavigationMenu>
                 <NavigationMenu>
                     <NavigationMenuList>
-                        <NavigationMenuItem className="mr-14">
+                        <NavigationMenuItem>
                             <NavigationMenuTrigger className="text-pink-600 hover:text-pink-800 transition-colors duration-150">
                                 <UserIcon />
                             </NavigationMenuTrigger>
                             <NavigationMenuContent>
                                 <ScrollArea className="absolute mt-1 py-2 bg-white shadow-lg rounded-md w-96 h-30">
-                                    <LoginPage />
+                                    <LoginComponent />
                                 </ScrollArea>
+                            </NavigationMenuContent>
+                        </NavigationMenuItem>
+                    </NavigationMenuList>
+                </NavigationMenu>
+                <NavigationMenu className="mr-14">
+                    <NavigationMenuList>
+                        <NavigationMenuItem>
+                            <NavigationMenuTrigger>
+                                Search Products...
+                            </NavigationMenuTrigger>
+                            <NavigationMenuContent className="z-10 mt-1 py-2 bg-white shadow-lg rounded-md max-h-[calc(100vh-4rem)] overflow-y-auto">
+                                <Command className="grid w-40 p-2">
+                                    <CommandInput placeholder="Search products..." className="h-9" onValueChange={(defaultValue) => setSearchQuery(defaultValue)} />
+                                    <CommandList>
+                                        {
+                                            filteredProducts.map((product) => (
+                                                <Link defaultValue={product.id} key={product.id} href={`${product.Category.link}/${product.slug}`} className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-100 hover:text-blue-500 transition-colors duration-150">
+                                                    <Image src={product.image} alt={product.name} width={40} height={40} className="rounded-md" />
+                                                    <span>{product.name}</span>
+                                                </Link>
+                                            ))
+                                        }
+                                    </CommandList>
+                                </Command>
                             </NavigationMenuContent>
                         </NavigationMenuItem>
                     </NavigationMenuList>
@@ -112,7 +146,7 @@ const Header = () => {
                                                 <div className="grid w-40 sm:w-64 md:w-80 lg:w-[42rem] xl:w-[42rem] 2xl:w-[48rem] p-2">
                                                     <div className="p-2">
                                                         <NavigationMenuLink asChild>
-                                                            <Link href={category.link} className="flex items-center gap-2 p-2 hover:bg-gray-100 font-bold">
+                                                            <Link href={category.link} className="flex items-center gap-2 p-2  hover:bg-gray-100 hover:text-blue-500 transition-colors duration-150 font-bold">
                                                                 <Image src={category.image} alt={category.name} className="w-10 h-10 object-cover rounded-md" height={64} width={64} />
                                                                 View All {category.name}
                                                             </Link>
@@ -120,7 +154,7 @@ const Header = () => {
                                                     </div>
                                                     {products.filter(product => product.categoryId === category.id).map((product) => (
                                                         <NavigationMenuLink key={product.id} asChild>
-                                                            <Link href={`${category.link}/${product.slug}`} className="flex items-center gap-2 p-2 hover:bg-gray-100">
+                                                            <Link href={`${category.link}/${product.slug}`} className="flex items-center gap-2 p-2  hover:bg-gray-100 hover:text-blue-500 transition-colors duration-150">
                                                                 <Image src={product.image} alt={product.name} className="w-10 h-10 object-cover rounded-md" height={64} width={64} />
                                                                 {product.name}
                                                             </Link>

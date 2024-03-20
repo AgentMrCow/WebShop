@@ -3,56 +3,53 @@ import React from 'react';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import dynamic from 'next/dynamic';
-import BootstrapNext from '@/app/(component)/BootstrapNext';
 import { Toaster } from "@/components/ui/toaster"
 import { CartProvider } from '@/app/(component)/CartContext';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import { ClerkProvider } from '@clerk/nextjs'
+import { getServerSession } from 'next-auth';
+import { SessionProvider } from '@/app/(component)/SessionContext'
+import Header from '@/app/(component)/header';
+import Link from 'next/link';
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
-
-const Breadcrumbs = dynamic(() => import('@/app/(component)/breadcrumbs'), { ssr: false });
-const Header = dynamic(() => import('@/app/(component)/header'), { ssr: false });
 
 export const metadata: Metadata = {
   title: "IERG4210 WebShop",
   description: "Created by Niu Ka Ngai 1155174712",
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode; }>) {
-  const defaultBreadcrumbs: [] = [];
-  <BootstrapNext />
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode; }>) {
+  const session = await getServerSession();
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <CartProvider>
-          <div className='container'>
-            <header>
+    // <ClerkProvider>
+    <SessionProvider session={session}>
+      <html lang="en">
+        <body className={inter.className}>
+          <CartProvider>
+            <div className='mx-auto max-w-screen-xl px-4'>
+
               <Header />
-            </header>
 
-            <nav aria-label="breadcrumb">
-              <Breadcrumbs breadcrumbs={defaultBreadcrumbs} />
-            </nav>
+              <main>
+                <section className="my-8">
+                  {children}
+                </section>
+              </main>
 
-            <main>
-              <section className="main">
-                {children}
-              </section>
-            </main>
+              <footer className="py-4 my-8">
+                <div className="flex justify-center border-b border-gray-200 pb-4 mb-4">
+                  <Link href="#" className="mx-2 text-gray-500 hover:text-gray-700">Return to Top</Link>
+                </div>
+                <p className="text-center text-gray-500">Copyright © 2024 Niu Ka Ngai. All rights reserved.</p>
+              </footer>
 
-            <footer className="py-3 my-4">
-              <ul className="nav justify-content-center border-bottom pb-3 mb-3">
-                <li className="nav-item"><a href="#" className="nav-link px-2 text-muted">Return to Top</a></li>
-              </ul>
-              <p className="text-center text-muted">Copyright © 2024 Niu Ka Ngai. All rights reserved.</p>
-            </footer>
-          </div>
-          <Toaster />
-          <BootstrapNext />
-        </CartProvider>
-      </body>
-    </html>
-
+            </div>
+            <Toaster />
+          </CartProvider>
+        </body>
+      </html>
+    </SessionProvider>
+    // </ClerkProvider>
   );
 };
