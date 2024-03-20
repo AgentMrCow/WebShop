@@ -1,4 +1,5 @@
 // @/app/types.tsx
+
 interface Category {
     id: number;
     name: string;
@@ -58,4 +59,22 @@ interface BreadcrumbItem {
 
 interface BreadcrumbsProps {
     breadcrumbs: BreadcrumbItem[];
+}
+
+// @/app/admin/page.tsx
+
+interface ProductData {
+    name: string;
+    slug: string;
+    price: number;
+    inventory: number;
+    description: string;
+    categoryId: number;
+    imageName: string;
+}
+
+interface UpdatedCategoryData {
+    name?: string;
+    imageName?: string;
+    link?: string;
 }

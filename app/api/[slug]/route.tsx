@@ -6,25 +6,6 @@ export const dynamic = 'force-dynamic'
 
 const prisma = new PrismaClient();
 
-export async function POST(
-    request: NextRequest,
-    { params }: { params: { slug: string } }
-) {
-    const slug = params.slug;
-    try {
-
-
-    } catch (error: unknown) {
-        if (error instanceof Error) {
-            console.error('[PRODUCT_SLUG_POST]', error);
-            return new NextResponse(JSON.stringify({ error: error.message }), { status: 500, headers: { "Content-Type": "application/json" } });
-        } else {
-            console.error('[PRODUCT_SLUG_POST]', 'An unexpected error occurred');
-            return new NextResponse(JSON.stringify({ error: 'An unexpected error occurred' }), { status: 500, headers: { "Content-Type": "application/json" } });
-        }
-    }
-}
-
 export async function GET(
     request: NextRequest,
     { params }: { params: { slug: string } }
@@ -47,8 +28,25 @@ export async function GET(
         }
     }
 }
+/*
+export async function POST(
+    request: NextRequest,
+    { params }: { params: { slug: string } }
+) {
+    const slug = params.slug;
+    try {
 
 
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            console.error('[PRODUCT_SLUG_POST]', error);
+            return new NextResponse(JSON.stringify({ error: error.message }), { status: 500, headers: { "Content-Type": "application/json" } });
+        } else {
+            console.error('[PRODUCT_SLUG_POST]', 'An unexpected error occurred');
+            return new NextResponse(JSON.stringify({ error: 'An unexpected error occurred' }), { status: 500, headers: { "Content-Type": "application/json" } });
+        }
+    }
+}
 
 export async function PATCH(
     request: NextRequest,
@@ -87,3 +85,4 @@ export async function DELETE(
         }
     }
 }
+*/

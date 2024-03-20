@@ -23,6 +23,8 @@ import { TableHead, TableRow, TableHeader, TableCell, TableBody, Table } from "@
 import { SelectValue, SelectTrigger, SelectItem, SelectContent, Select } from "@/components/ui/select"
 import { CardTitle, CardDescription, CardHeader, CardContent, CardFooter, Card } from "@/components/ui/card"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { useSession } from '@/app/(component)/SessionContext';
+import { signOut } from 'next-auth/react';
 
 interface ProductRowProps {
   product: Product;
@@ -37,27 +39,11 @@ interface CategoryRowProps {
   handleCategoryDelete: (id: number) => void;
 }
 
-interface ProductData {
-  name: string;
-  slug: string;
-  price: number;
-  inventory: number;
-  description: string;
-  categoryId: number;
-  imageName: string;
-}
-
-interface UpdatedCategoryData {
-  name?: string;
-  imageName?: string;
-  link?: string;
-}
-
 interface ImageUploadFieldProps {
-  onChange: (file: File | null) => void; // Adjust based on your actual usage
-  onBlur: () => void; // Adjust based on your actual usage
+  onChange: (file: File | null) => void;
+  onBlur: () => void;
   name: string;
-  ref: React.Ref<any>; // You can specify a more specific type instead of 'any'
+  ref: React.Ref<any>;
 }
 
 
@@ -162,11 +148,18 @@ const ProductRow = ({ product, onUpdate, onDelete, categories }: ProductRowProps
       description: otherData.description,
       imageName,
     };
-    console.log(nonImageData);
+    // toast({
+    //   title: "nonImageData",
+    //   description: `${nonImageData}`,
+    // });
+
     try {
       const response = await axios.patch(`/api/products/${product.id}`, nonImageData);
 
-      console.log('Form data submitted successfully:', response.data);
+      // toast({
+      //   title: "response.data",
+      //   description: `${response.data}`,
+      // });
 
       const imageFormData = new FormData();
 
@@ -178,19 +171,20 @@ const ProductRow = ({ product, onUpdate, onDelete, categories }: ProductRowProps
 
       const imageResponse = await axios.post(`/api/admin/image`, imageFormData);
 
-      console.log('Product updated successfully:', imageResponse.data);
+      // toast({
+      //   title: "Product updated successfully:",
+      //   description: `${imageResponse.data}`,
+      // });
 
       toast({
         title: 'Success',
         description: 'Product updated successfully.',
       });
 
-      // To TA, haven't implemented: Update local state or re-fetch products to reflect changes
     } catch (error) {
-      console.error('Failed to update product:', error);
       toast({
-        title: 'Error',
-        description: 'Failed to update product.',
+        title: "Failed to update product:",
+        description: `${error}`,
       });
     }
   };
@@ -204,7 +198,7 @@ const ProductRow = ({ product, onUpdate, onDelete, categories }: ProductRowProps
         <div style={{ width: '50px', height: '50px', position: 'relative' }}>
           <Image src={imagePreview} alt={product.name} sizes="100%" fill style={{ objectFit: 'cover' }} />
         </div>
-        <Input type="file" accept="image/png image/gif, image/jpg, image/jpeg" {...register('image')} />
+        <Input type="file" accept=".png, .jpg, .jpeg, .gif" {...register('image')} />
       </TableCell>
       <TableCell>
         <Textarea {...register('name')} />
@@ -293,10 +287,9 @@ const CategoryRow = ({ category, handleCategoryUpdate, handleCategoryDelete }: C
       });
 
     } catch (error) {
-      console.error('Failed to update category:', error);
       toast({
-        title: 'Error',
-        description: 'Failed to update category.',
+        title: "Failed to update category",
+        description: `${error}`,
       });
     }
   };
@@ -308,7 +301,7 @@ const CategoryRow = ({ category, handleCategoryUpdate, handleCategoryDelete }: C
         <div style={{ width: '50px', height: '50px', position: 'relative' }}>
           <Image src={imagePreview} alt={category.name} sizes="100%" fill style={{ objectFit: 'cover' }} />
         </div>
-        <Input type="file" accept="image/png image/gif, image/jpg, image/jpeg" {...register('image')} />
+        <Input type="file" accept=".png, .jpg, .jpeg, .gif" {...register('image')} />
       </TableCell>
       <TableCell>
         <Input {...register('name')} />
@@ -457,6 +450,7 @@ const ImageUploadField: React.FC<ImageUploadFieldProps & { imagePreview: string,
 
 
 export default function AdminPage() {
+  const session = useSession();
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [productImagePreview, setProductImagePreview] = useState('');
@@ -466,40 +460,42 @@ export default function AdminPage() {
   const resetProductImagePreview = () => setProductImagePreview('');
 
   useEffect(() => {
+    //if (session?.user?.name === "Admin") {
     const fetchCategories = async () => {
       try {
         const response = await axios.get('/api/categories');
         setCategories(response.data);
       } catch (error) {
-        console.error('Failed to fetch categories:', error);
+        toast({
+          title: "Failed to fetch categories",
+          description: `${error}`,
+        });
       }
     };
 
-    fetchCategories();
-  }, []);
-
-  useEffect(() => {
     const fetchProducts = async () => {
       try {
         const response = await axios.get('/api/products');
         setProducts(response.data);
       } catch (error) {
-        console.error('Failed to fetch products:', error);
+        toast({
+          title: "Failed to fetch products",
+          description: `${error}`,
+        });
       }
     };
 
-    fetchProducts();
+    // Using Promise.all to run both fetch operations in parallel
+    Promise.all([fetchCategories(), fetchProducts()]).catch((error) => {
+      toast({
+        title: "Failed to fetch data",
+        description: `${error}`,
+      });
+    });
+    //}
+    //}, [session]); // 'session' is the dependency for this effect
   }, []);
 
-  const handleCategoryReset = () => {
-    categoryForm.reset();
-    resetCategoryImagePreview();
-  };
-
-  const handleProductReset = () => {
-    productForm.reset();
-    resetProductImagePreview();
-  };
 
   const productForm = useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
@@ -513,6 +509,39 @@ export default function AdminPage() {
     },
     mode: "onChange",
   });
+
+  const categoryForm = useForm<CategoryFormValues>({
+    resolver: zodResolver(categoryFormSchema),
+    defaultValues: {
+      name: "",
+      image: undefined,
+    },
+    mode: "onChange",
+  });
+
+
+  if (session?.user?.name !== "Admin") {
+    return (
+      <div>
+        <h1>Access Denied</h1>
+        <p></p>
+        <p>Hi, <strong>{session?.user?.email}</strong>,</p>
+        <p>You are not an Admin User</p>
+        <p>You do not have the necessary permissions to access the admin page.</p>
+        <Button onClick={() => signOut()}>Click here to logout and relogin as an admin user</Button>
+      </div>
+    );
+  }
+
+  const handleCategoryReset = () => {
+    categoryForm.reset();
+    resetCategoryImagePreview();
+  };
+
+  const handleProductReset = () => {
+    productForm.reset();
+    resetProductImagePreview();
+  };
 
   async function onProductSubmit(data: ProductFormValues) {
     // Separate the image data from the rest of the form data
@@ -534,7 +563,10 @@ export default function AdminPage() {
     try {
       const response = await axios.post('/api/admin', nonImageData);
 
-      console.log('Form data submitted successfully:', response.data);
+      // toast({
+      //   title: "Form data submitted successfully:",
+      //   description: `${response.data}`,
+      // });
 
       const imageFormData = new FormData();
 
@@ -546,7 +578,10 @@ export default function AdminPage() {
 
       const imageResponse = await axios.post(`/api/admin/image`, imageFormData);
 
-      console.log('Image submitted successfully:', imageResponse.data);
+      // toast({
+      //   title: "Image submitted successfully:",
+      //   description: `${imageResponse.data}`,
+      // });
 
       toast({
         title: 'Product created',
@@ -554,25 +589,12 @@ export default function AdminPage() {
       });
 
     } catch (error) {
-      console.error('Failed to submit product:', error);
       toast({
         title: 'Error',
-        description: 'Failed to create product. Please make sure creating a product with an unique name.',
+        description: 'Failed to create product. Please make sure creating a product with an unique name.' + `${error}`,
       });
     }
   }
-
-
-
-
-  const categoryForm = useForm<CategoryFormValues>({
-    resolver: zodResolver(categoryFormSchema),
-    defaultValues: {
-      name: "",
-      image: undefined,
-    },
-    mode: "onChange",
-  });
 
   async function onCategorySubmit(data: CategoryFormValues) {
     const { image, name } = data;
@@ -591,7 +613,10 @@ export default function AdminPage() {
     try {
       const response = await axios.post('/api/admin', nonImageData);
 
-      console.log('Form data submitted successfully:', response.data);
+      // toast({
+      //   title: "Form data submitted successfully:",
+      //   description: `${response.data}`,
+      // });
 
       const imageFormData = new FormData();
 
@@ -603,7 +628,10 @@ export default function AdminPage() {
 
       const imageResponse = await axios.post(`/api/admin/image`, imageFormData);
 
-      console.log('Image submitted successfully:', imageResponse.data);
+      // toast({
+      //   title: "Image submitted successfully:",
+      //   description: `${imageResponse.data}`,
+      // });
 
       toast({
         title: 'Category created',
@@ -611,10 +639,9 @@ export default function AdminPage() {
       });
 
     } catch (error) {
-      console.error('Failed to submit category:', error);
       toast({
         title: 'Error',
-        description: 'Failed to create category. Please make sure creating a category with an unique name.',
+        description: 'Failed to create category. Please make sure creating a product with an unique name.' + `${error}`,
       });
     }
   }
@@ -624,8 +651,10 @@ export default function AdminPage() {
       await axios.patch(`/api/products/${id}`, productData);
       toast({ title: 'Product updated successfully' });
     } catch (error) {
-      console.error('Failed to update product:', error);
-      toast({ title: 'Error', description: 'Failed to update product' });
+      toast({
+        title: "Failed to update product:",
+        description: `${error}`,
+      });
     }
   };
 
@@ -637,8 +666,10 @@ export default function AdminPage() {
       setCategories(categories.filter((category) => category.id !== id));
       toast({ title: 'Product deleted successfully' });
     } catch (error) {
-      console.error('Failed to delete product:', error);
-      toast({ title: 'Error', description: 'Failed to delete product' });
+      toast({
+        title: "Failed to delete product:",
+        description: `${error}`,
+      });
     }
   };
 
@@ -647,8 +678,10 @@ export default function AdminPage() {
       await axios.patch(`/api/categories/${id}`, updatedData);
       toast({ title: 'Category updated successfully' });
     } catch (error) {
-      console.error('Failed to update category:', error);
-      toast({ title: 'Error', description: 'Failed to update category' });
+      toast({
+        title: "Failed to update category:",
+        description: `${error}`,
+      });
     }
   };
 
@@ -659,8 +692,10 @@ export default function AdminPage() {
       setProducts(products.filter((product) => product.categoryId !== id));
       toast({ title: 'Category and associated products deleted successfully' });
     } catch (error) {
-      console.error('Failed to delete category and its products:', error);
-      toast({ title: 'Error', description: 'Failed to delete category and its products' });
+      toast({
+        title: "Failed to delete category and its products:",
+        description: `${error}`,
+      });
     }
   };
 
@@ -780,7 +815,9 @@ export default function AdminPage() {
                         imagePreview={productImagePreview}
                         setImagePreview={(preview) => {
                           if (preview instanceof ArrayBuffer || preview === null) {
-                            console.error('Invalid image preview type');
+                            toast({
+                              title: "Invalid image preview type",
+                            });
                             return;
                           }
                           setProductImagePreview(preview);
@@ -833,7 +870,9 @@ export default function AdminPage() {
                         imagePreview={categoryImagePreview}
                         setImagePreview={(preview) => {
                           if (preview instanceof ArrayBuffer || preview === null) {
-                            console.error('Invalid image preview type');
+                            toast({
+                              title: "Invalid image preview type",
+                            });
                             return;
                           }
                           setCategoryImagePreview(preview);

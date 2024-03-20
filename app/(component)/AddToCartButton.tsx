@@ -1,5 +1,6 @@
 // @/app/(component)/AddToCartButton.tsx
 import React from 'react';
+import { Button } from '@/components/ui/button';
 import { useCart } from '@/app/(component)/CartContext';
 
 const AddToCartButton: React.FC<AddToCartButtonProps> = ({ product, quantity }) => {
@@ -10,7 +11,7 @@ const AddToCartButton: React.FC<AddToCartButtonProps> = ({ product, quantity }) 
   };
 
   return (
-    <button className="btn btn-primary" onClick={handleAddToCart}>Add to Cart</button>
+    <Button className="ml-auto" onClick={handleAddToCart}>Add to Cart</Button>
   );
 };
 

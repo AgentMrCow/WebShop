@@ -8,10 +8,17 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Input } from "@/components/ui/input"
 import Image from 'next/image';
+import { useSession } from '@/app/(component)/SessionContext';
 
 
 
 export default function ShoppingCartPage() {
+    const session = useSession();
+    var user = "Guest";
+    if (!!session) {
+        user = session.user?.email || "Guest";
+
+    }
     const { items, updateItemQuantity, removeItem } = useCart();
 
     const calculateTotal = () => {
@@ -21,7 +28,7 @@ export default function ShoppingCartPage() {
     if (items.length === 0) {
         return (
             <div className="flex flex-col w-full px-4">
-                <h1 className="text-2xl font-bold text-center my-4">Your cart is empty</h1>
+                <h1 className="text-2xl font-bold text-center my-4">Hello {user},<br />Your cart is empty</h1>
                 <div className="text-center my-4">Enjoy your shopping!</div>
             </div>
         );
@@ -29,7 +36,7 @@ export default function ShoppingCartPage() {
 
     return (
         <div className="flex flex-col w-full px-4">
-            <h1 className="text-2xl font-bold text-center my-4">Review your cart</h1>
+            <h1 className="text-2xl font-bold text-center my-4">Hello {user},<br />Please review your cart</h1>
             {items.map((item, index) => (
                 <Card key={index}>
                     <CardHeader>

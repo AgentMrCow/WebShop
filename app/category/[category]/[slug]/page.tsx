@@ -1,4 +1,3 @@
-// @/app/category/[category]/[slug]/page.tsx
 "use client"
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
@@ -6,8 +5,7 @@ import Image from 'next/image';
 import Breadcrumbs from '@/app/(component)/breadcrumbs';
 import AddToCartButton from '@/app/(component)/AddToCartButton';
 import QuantitySelector from '@/app/(component)/QuantitySelector';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import '@/app/globals.css';
+import { toast } from "@/components/ui/use-toast"
 
 type Params = {
   params: {
@@ -29,7 +27,10 @@ const ProductPage: React.FC<Params> = ({ params }) => {
         const response = await axios.get<Product>(`/api/${slug}`);
         setProduct(response.data);
       } catch (error) {
-        console.error('Failed to fetch product:', error);
+        toast({
+          title: "Failed to fetch product",
+          description: `${error}`,
+        });
       } finally {
         setLoading(false);
       }
@@ -43,36 +44,36 @@ const ProductPage: React.FC<Params> = ({ params }) => {
   }
 
   if (!product) {
-    return <div className="container mt-5"><p>Product not found.</p></div>;
+    return <div className="mt-5 container mx-auto"><p>Product not found.</p></div>;
   }
-
-  const capitalizeFirstLetter = (string: string) => string.charAt(0).toUpperCase() + string.slice(1);
-  const capitalizedCategory = category ? capitalizeFirstLetter(category.replace(/-/g, ' ')) : '';
 
   const breadcrumbs = [
     { label: 'Home', path: '/' },
-    { label: capitalizedCategory, path: `/category/${category}` },
+    { label: product.Category.name, path: `/category/${category}` },
     { label: product.name },
   ];
 
   return (
     <>
       <Breadcrumbs breadcrumbs={breadcrumbs} />
-      <div className="row">
-        <div className="col-md-6">
-          <Image src={product.image} className="card-img-top" alt={product.name} width={1024} height={1024} priority />
+      <div className="flex flex-wrap mx-auto">
+        <div className="w-full md:w-1/2 pr-4">
+          <Image src={product.image} alt={product.name} width={1024} height={1024} priority />
         </div>
-        <div className="col-md-6">
-          <h2>{product.name}</h2>
-          <p className="lead">{product.description}</p>
-          <p className="h4">${product.price}</p>
+        <div className="w-full md:w-1/2 pl-4">
+          <h2 className="text-2xl font-bold">{product.name}</h2>
+          <p className="mt-2">{product.description}</p>
+          <p className="text-xl font-semibold my-2">${product.price}</p>
           {product.inventory <= 3 ? (
-            <p className="text-danger">Only {product.inventory} left!</p>
+            <p className="text-red-500">Only {product.inventory} left!</p>
           ) : (
-            <p>In stock: {product.inventory}</p>
+            <p className="text-green-500">In stock: {product.inventory}</p>
           )}
-          <QuantitySelector quantity={quantity} onQuantityChange={setQuantity} />
-          <AddToCartButton product={product} quantity={quantity} />
+          <div className="mt-4">
+            <QuantitySelector quantity={quantity} onQuantityChange={setQuantity} />
+            <p className="p-2"></p>
+            <AddToCartButton product={product} quantity={quantity} />
+          </div>
         </div>
       </div>
     </>
