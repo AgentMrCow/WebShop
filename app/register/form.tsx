@@ -67,11 +67,8 @@ export default function RegisterForm() {
                 <FormItem className="space-y-2">
                   <FormLabel className="text-base">Email</FormLabel>
                   <FormControl>
-                    <Input id="email" placeholder="Enter your email" {...field} />
+                    <Input id="email" placeholder="example4210@ie.cuhk.edu.hk" {...field} />
                   </FormControl>
-                  <FormDescription>
-                    {"example4210@ie.cuhk.edu.hk"}
-                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -83,11 +80,8 @@ export default function RegisterForm() {
                 <FormItem className="space-y-2">
                   <FormLabel className="text-base">New Password</FormLabel>
                   <FormControl>
-                    <Input id="newPassword" type="password" placeholder="Enter your new password" {...field} />
+                    <Input id="newPassword" type="password" placeholder="The password must be 8-16 characters long and include both lowercase and uppercase letters, as well as digits." {...field} />
                   </FormControl>
-                  <FormDescription>
-                    {"The password must be 8-16 characters long and include both lowercase and uppercase letters, as well as digits."}
-                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -99,11 +93,8 @@ export default function RegisterForm() {
                 <FormItem className="space-y-2">
                   <FormLabel className="text-base">Confirm New Password</FormLabel>
                   <FormControl>
-                    <Input id="confirmPassword" type="password" placeholder="Confirm your new password" {...field} />
+                    <Input id="confirmPassword" type="password" placeholder="The two passwords must match." {...field} />
                   </FormControl>
-                  <FormDescription>
-                    {"The two passwords must match."}
-                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -112,14 +103,14 @@ export default function RegisterForm() {
               <Checkbox id="Admin" disabled />
               <Label
                 htmlFor="Admin"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                className="text-base font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               >
                 Register as an Admin user.
               </Label>
             </div>
           </CardContent>
           <CardFooter>
-            Have an account? <Link href="/login" className="text-blue-500 hover:text-blue-700 font-semibold">Log in here</Link>.
+            Have an account? Log in <Link href="/login" className="text-blue-500 hover:text-blue-700 font-semibold">here</Link>.
             <Button className="ml-auto" type="submit">
               Register
             </Button>
