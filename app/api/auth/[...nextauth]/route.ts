@@ -109,37 +109,37 @@ const handler = NextAuth({
   //     }
   //   },
   // },
-  callbacks: {
-    session: ({ session, token }) => {
-      console.log('Session Callback', { session, token })
-      return {
-        ...session,
-        user: {
-          ...session.user,
-          id: token.id,
-          isAdmin: token.isAdmin,
-          Cookie_name: token.Cokkie_name,
-          sameSite: token.sameSite,
-          httpOnly: token.httpOnly
-        }
-      }
-    },
-    jwt: ({ token, user }) => {
-      console.log('JWT Callback', { token, user })
-      if (user) {
-        const u = user as unknown as any
-        return {
-          ...token,
-          id: u.id,
-          isAdmin: u.isAdmin,
-          Cookie_name: u.Cookie_name,
-          sameSite: u.sameSite,
-          httpOnly: u.httpOnly
-        }
-      }
-      return token
-    }
-  }
+  // callbacks: {
+  //   session: ({ session, token }) => {
+  //     console.log('Session Callback', { session, token })
+  //     return {
+  //       ...session,
+  //       user: {
+  //         ...session.user,
+  //         id: token.id,
+  //         isAdmin: token.isAdmin,
+  //         Cookie_name: token.Cokkie_name,
+  //         sameSite: token.sameSite,
+  //         httpOnly: token.httpOnly
+  //       }
+  //     }
+  //   },
+  //   jwt: ({ token, user }) => {
+  //     console.log('JWT Callback', { token, user })
+  //     if (user) {
+  //       const u = user as unknown as any
+  //       return {
+  //         ...token,
+  //         id: u.id,
+  //         isAdmin: u.isAdmin,
+  //         Cookie_name: u.Cookie_name,
+  //         sameSite: u.sameSite,
+  //         httpOnly: u.httpOnly
+  //       }
+  //     }
+  //     return token
+  //   }
+  // }
 })
 
 export { handler as GET, handler as POST };
