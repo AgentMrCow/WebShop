@@ -48,14 +48,15 @@ export default function ShoppingCartPage() {
                             <Label className="text-base" htmlFor={`quantity-${item.id}`}>
                                 <Image src={item.image} alt={item.name} className="w-10 h-10 object-cover rounded-md" height={64} width={64} />
                             </Label>
-                            <div className="d-flex align-items-center">
-                                <button className="btn btn-outline-secondary btn-sm ml-2" onClick={() => updateItemQuantity(item.id, Math.max(1, item.quantity - 1))}>
+                            <div className="flex items-center">
+                                <Button variant="outline" className="px-2 py-1 text-sm" onClick={() => updateItemQuantity(item.id, Math.max(1, item.quantity - 1))}>
                                     -
-                                </button>
+                                </Button>
+
                                 <Input
                                     type="number"
                                     id={`quantity-${item.id}`}
-                                    className="form-input text-center mx-2"
+                                    className="mx-2 text-center w-16 text-sm py-1"
                                     value={item.quantity}
                                     onChange={(e) => {
                                         const newQuantity = parseInt(e.target.value, 10);
@@ -70,8 +71,8 @@ export default function ShoppingCartPage() {
                                 />
 
 
-                                <button
-                                    className="btn btn-outline-secondary btn-sm mr-2"
+                                <Button
+                                    variant="outline" className="px-2 py-1 text-sm"
                                     onClick={() => {
                                         if (item.quantity < 99999) {
                                             updateItemQuantity(item.id, item.quantity + 1);
@@ -79,7 +80,7 @@ export default function ShoppingCartPage() {
                                     }}
                                 >
                                     +
-                                </button>
+                                </Button>
 
                             </div>
                             <Button size="icon" variant="outline" className="border-none" onClick={() => removeItem(item.id)}>
