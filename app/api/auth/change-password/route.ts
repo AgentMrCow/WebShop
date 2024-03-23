@@ -1,12 +1,20 @@
 // @/app/api/auth/change-password/route.tsx
+
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from "next-auth/next"
 import { hash, compare } from 'bcrypt';
 import { PrismaClient } from '@prisma/client';
 import { changePWSchema } from '@/app/zod';
+import DOMPurify from 'isomorphic-dompurify';
+import { verifyCsrfToken } from '@/app/api/csrf';
+
 export const dynamic = 'force-dynamic';
 
 const prisma = new PrismaClient();
+
+const sanitizeInput = (input: string): string => {
+    return DOMPurify.sanitize(input);
+};
 
 export async function POST(request: NextRequest, response: NextResponse) {
 
@@ -18,10 +26,20 @@ export async function POST(request: NextRequest, response: NextResponse) {
         return new NextResponse(JSON.stringify({ error: 'Not authenticated' }), { status: 401, headers: { "Content-Type": "application/json" } });
     }
 
+    if (!verifyCsrfToken()) {
+        return NextResponse.json({ error: 'Invalid CSRF token' }, { status: 403 })
+      }
+
     const body = await request.json();
     let data;
     try {
-        data = changePWSchema.parse(body);
+        const sanitizedBody = {
+            ...body,
+            currentPassword: sanitizeInput(body.currentPassword),
+            newPassword: sanitizeInput(body.newPassword),
+            confirmPassword: sanitizeInput(body.confirmPassword),
+        };
+        data = changePWSchema.parse(sanitizedBody);
     } catch (error) {
         return new NextResponse(JSON.stringify({ error: 'Validation failed' }), { status: 400, headers: { "Content-Type": "application/json" } });
     }

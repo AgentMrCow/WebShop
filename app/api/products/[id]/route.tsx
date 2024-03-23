@@ -4,20 +4,24 @@ import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { getServerSession } from 'next-auth';
 import { z } from 'zod';
+import DOMPurify from 'isomorphic-dompurify';
+import { verifyCsrfToken } from '@/app/api/csrf';
+
 export const dynamic = 'force-dynamic'
 
+const prisma = new PrismaClient();
+
+const sanitizeInput = (input: string): string => DOMPurify.sanitize(input);
+
 const ProductDataSchema = z.object({
-    name: z.string(),
-    slug: z.string(),
+    name: z.string().transform(sanitizeInput),
+    slug: z.string().transform(sanitizeInput),
     price: z.number().min(0, "Price must be a positive number."),
     inventory: z.number().min(0, "Inventory must be a positive number."),
-    description: z.string(),
+    description: z.string().transform(sanitizeInput),
     categoryId: z.number().min(1, "Category ID must be a positive number."),
-    imageName: z.string(),
+    imageName: z.string().transform(sanitizeInput),
 });
-
-
-const prisma = new PrismaClient();
 
 export async function GET(
     request: NextRequest,
@@ -64,6 +68,10 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
         return new NextResponse(JSON.stringify({ error: 'Not authenticated' }), { status: 401, headers: { "Content-Type": "application/json" } });
     }
 
+    if (!verifyCsrfToken()) {
+        return NextResponse.json({ error: 'Invalid CSRF token' }, { status: 403 })
+      }
+
     const productId = parseInt(params.id, 10);
     if (isNaN(productId)) {
         return new NextResponse(JSON.stringify({ error: 'Invalid product ID' }), { status: 400, headers: { "Content-Type": "application/json" } });
@@ -109,6 +117,10 @@ export async function DELETE(
     if (session?.user?.name !== "Admin") {
         return new NextResponse(JSON.stringify({ error: 'Not authenticated' }), { status: 401, headers: { "Content-Type": "application/json" } });
     }
+
+    if (!verifyCsrfToken()) {
+        return NextResponse.json({ error: 'Invalid CSRF token' }, { status: 403 })
+      }
 
     const productId = parseInt(params.id, 10);
 

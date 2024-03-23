@@ -72,7 +72,14 @@ export default function LoginComponent() {
     async function changePWSubmit(data: changePWValues) {
 
         try {
-            const response = await axios.post('/api/auth/change-password', data);
+            //const csrfToken = cookies().get('next-auth.csrf-token')?.value.split('|')[0]
+
+            const response = await axios.post('/api/auth/change-password');
+            /*, data, {
+                headers: {
+                    'X-CSRF-Token': csrfToken,
+                }
+            });*/
 
             const result = response.data;
 
@@ -218,6 +225,7 @@ export default function LoginComponent() {
                         />
                     </CardContent>
                     <CardFooter>
+                        No account? Sign up<Link href="/register" className="text-blue-500 hover:text-blue-700 font-semibold"> here</Link>.
                         <Button className="ml-auto" type="submit">
                             Login
                         </Button>

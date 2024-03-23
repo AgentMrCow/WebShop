@@ -4,36 +4,41 @@ import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { getServerSession } from 'next-auth';
 import { z } from "zod";
+import DOMPurify from 'isomorphic-dompurify';
+
 export const dynamic = 'force-dynamic'
 
 const prisma = new PrismaClient();
 
+const sanitizeInput = (input: string): string => {
+  return DOMPurify.sanitize(input);
+};
+
 const ServerProductSchema = z.object({
-  name: z.string().min(1, "Product name is required."),
-  slug: z.string(),
+  name: z.string().min(1, "Product name is required.").transform(sanitizeInput),
+  slug: z.string().transform(sanitizeInput),
   price: z.number().min(0, "Price must be a positive number."),
   inventory: z.number().min(0, "Inventory must be a positive number."),
-  description: z.string().min(1, "Product description is required."),
-  category: z.string(), // Keep this as string for initial validation
-  imageName: z.string(),
+  description: z.string().min(1, "Product description is required.").transform(sanitizeInput),
+  category: z.string().transform(sanitizeInput),
+  imageName: z.string().transform(sanitizeInput),
 }).transform(({ name, slug, price, inventory, description, category, imageName }) => ({
   name,
   slug,
   price,
   inventory,
   description,
-  categoryId: parseInt(category, 10), // Transform string category to number
-  image: imageName, // Use imageName for the image field
+  categoryId: parseInt(category, 10),
+  image: imageName,
 }));
 
-// Define a schema for validating and transforming category data
 const ServerCategorySchema = z.object({
-  name: z.string().min(1, "Category name is required."),
-  imageName: z.string(),
-  link: z.string(),
+  name: z.string().min(1, "Category name is required.").transform(sanitizeInput),
+  imageName: z.string().transform(sanitizeInput),
+  link: z.string().transform(sanitizeInput),
 }).transform(({ name, imageName, link }) => ({
   name,
-  image: imageName, // Use imageName for the image field
+  image: imageName,
   link,
 }));
 
@@ -47,14 +52,12 @@ export async function POST(request: NextRequest) {
     const { type, ...data } = body;
 
     if (type === 'product') {
-      // Validate and transform product data
       const validatedProduct = ServerProductSchema.parse(data);
       const product = await prisma.product.create({
         data: validatedProduct,
       });
       return NextResponse.json(product);
     } else if (type === 'category') {
-      // Validate and transform category data
       const validatedCategory = ServerCategorySchema.parse(data);
       const category = await prisma.category.create({
         data: validatedCategory,
