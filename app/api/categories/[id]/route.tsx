@@ -4,16 +4,20 @@ import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { getServerSession } from 'next-auth';
 import { z } from 'zod';
+import DOMPurify from 'isomorphic-dompurify';
+import { verifyCsrfToken } from '@/app/api/csrf';
+
 export const dynamic = 'force-dynamic'
 
-const UpdatedCategoryDataSchema = z.object({
-    name: z.string().optional(),
-    imageName: z.string().optional(),
-    link: z.string().optional(),
-});
-
-
 const prisma = new PrismaClient();
+
+const sanitizeInput = (input: string): string => DOMPurify.sanitize(input);
+
+const UpdatedCategoryDataSchema = z.object({
+    name: z.string().transform(sanitizeInput),
+    imageName: z.string().transform(sanitizeInput),
+    link: z.string().transform(sanitizeInput),
+});
 
 export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
     const session = await getServerSession();
@@ -21,6 +25,10 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
     if (session?.user?.name !== "Admin") {
         return new NextResponse(JSON.stringify({ error: 'Not authenticated' }), { status: 401, headers: { "Content-Type": "application/json" } });
     }
+
+    if (!verifyCsrfToken()) {
+        return NextResponse.json({ error: 'Invalid CSRF token' }, { status: 403 })
+      }
 
     const categoryId = parseInt(params.id, 10);
     if (isNaN(categoryId)) {
@@ -32,10 +40,10 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
         const validatedData = UpdatedCategoryDataSchema.parse(body);
 
         const prismaData = {
-            ...validatedData,
+            name: validatedData.name,
+            link: validatedData.link,
             image: validatedData.imageName,
         };
-        delete prismaData.imageName;
 
         const category = await prisma.category.update({
             where: { id: categoryId },
@@ -48,7 +56,6 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
             console.error('[CATEGORY_ID_PATCH]', error);
             return new NextResponse(JSON.stringify({ error: error.message }), { status: 500, headers: { "Content-Type": "application/json" } });
         } else if (error instanceof z.ZodError) {
-            // Handle validation errors
             return new NextResponse(JSON.stringify({ error: error.errors }), { status: 400, headers: { "Content-Type": "application/json" } });
         } else {
             console.error('[CATEGORY_ID_PATCH]', 'An unexpected error occurred');
@@ -69,6 +76,10 @@ export async function DELETE(
     if (session?.user?.name !== "Admin") {
         return new NextResponse(JSON.stringify({ error: 'Not authenticated' }), { status: 401, headers: { "Content-Type": "application/json" } });
     }
+
+    if (!verifyCsrfToken()) {
+        return NextResponse.json({ error: 'Invalid CSRF token' }, { status: 403 })
+      }
 
     const categoryId = parseInt(params.id, 10);
 
