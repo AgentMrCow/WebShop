@@ -225,7 +225,7 @@ export default function LoginComponent() {
                         />
                     </CardContent>
                     <CardFooter>
-                        No account? Sign up<Link href="/register" className="text-blue-500 hover:text-blue-700 font-semibold"> here</Link>.
+                        No account? Sign up <Link href="/register" className="text-blue-500 hover:text-blue-700 font-semibold">here</Link>.
                         <Button className="ml-auto" type="submit">
                             Login
                         </Button>
