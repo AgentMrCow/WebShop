@@ -5,6 +5,15 @@ import { compare } from 'bcrypt';
 import { PrismaAdapter } from "@next-auth/prisma-adapter"
 import { PrismaClient } from '@prisma/client';
 import { loginFormSchema } from '@/app/zod';
+import GoogleProvider from 'next-auth/providers/google'
+import GitHubProvider from 'next-auth/providers/github';
+
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID!
+const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET!
+
+const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID!;
+const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET!;
+
 
 const prisma = new PrismaClient();
 
@@ -19,11 +28,20 @@ const handler = NextAuth({
   },
   adapter: PrismaAdapter(prisma),
   providers: [
+    GoogleProvider({
+      clientId: GOOGLE_CLIENT_ID,
+      clientSecret: GOOGLE_CLIENT_SECRET,
+    }),
+    GitHubProvider({
+      clientId: GITHUB_CLIENT_ID,
+      clientSecret: GITHUB_CLIENT_SECRET,
+    }),
     CredentialsProvider({
       credentials: {
         email: {},
         password: {},
       },
+      
       async authorize(credentials, req) {
         try {
 

@@ -8,13 +8,15 @@ import { toast } from "@/components/ui/use-toast"
 import { registerSchema, reigsterValues } from '@/app/zod';
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label";
-import { redirect } from "next/navigation";
+import { useRouter } from 'next/navigation'
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import Link from 'next/link';
 import axios from 'axios';
 
 export default function RegisterForm() {
+
+  const router = useRouter()
 
   const form = useForm<reigsterValues>({
     resolver: zodResolver(registerSchema),
@@ -28,14 +30,14 @@ export default function RegisterForm() {
 
 
   async function onRegister(data: reigsterValues) {
-
     try {
-      const response = await axios.post('/api/auth/register');
+
+      const response = await axios.post('/api/auth/register', data);
 
       const result = response.data;
 
       if (response.status === 200) {
-        redirect("/login")
+        router.push("/login")
       } else {
         toast({
           title: "Failed to register",
@@ -57,7 +59,7 @@ export default function RegisterForm() {
         <Card>
           <CardHeader className="space-y-2">
             <CardTitle className="text-3xl">Guest Registration</CardTitle>
-            <CardDescription>Register to manage your purchase</CardDescription>
+            <CardDescription>By signing up, you agree to our <Link href="/register" className="text-blue-500 hover:text-blue-700 font-semibold">Terms of Service</Link>, <Link href="/register" className="text-blue-500 hover:text-blue-700 font-semibold">Privacy Policy</Link> and <Link href="/register" className="text-blue-500 hover:text-blue-700 font-semibold">Cookie Policy</Link>.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <FormField
@@ -78,7 +80,7 @@ export default function RegisterForm() {
               name="newPassword"
               render={({ field }) => (
                 <FormItem className="space-y-2">
-                  <FormLabel className="text-base">New Password</FormLabel>
+                  <FormLabel className="text-base">Password</FormLabel>
                   <FormControl>
                     <Input id="newPassword" type="password" placeholder="The password must be 8-16 characters long and include both lowercase and uppercase letters, as well as digits." {...field} />
                   </FormControl>
@@ -91,7 +93,7 @@ export default function RegisterForm() {
               name="confirmPassword"
               render={({ field }) => (
                 <FormItem className="space-y-2">
-                  <FormLabel className="text-base">Confirm New Password</FormLabel>
+                  <FormLabel className="text-base">Confirm Password</FormLabel>
                   <FormControl>
                     <Input id="confirmPassword" type="password" placeholder="The two passwords must match." {...field} />
                   </FormControl>
@@ -110,7 +112,7 @@ export default function RegisterForm() {
             </div>
           </CardContent>
           <CardFooter>
-            Have an account? Sign in&nbsp;<Link href="/login" className="text-blue-500 hover:text-blue-700 font-semibold">here</Link>.
+            <div>Already have an account?&nbsp;<Link href="/login" className="text-blue-500 hover:text-blue-700 font-semibold">Login</Link>.</div>
             <Button className="ml-auto" type="submit">
               Register
             </Button>
