@@ -105,7 +105,7 @@ export default function RegisterForm() {
                 htmlFor="Admin"
                 className="text-base font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               >
-                Register as an Admin user (not allow XD).
+                Register as an Admin user (not allowed XD).
               </Label>
             </div>
           </CardContent>
