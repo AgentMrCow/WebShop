@@ -110,7 +110,7 @@ export default function RegisterForm() {
             </div>
           </CardContent>
           <CardFooter>
-            Have an account? Log in <Link href="/login" className="text-blue-500 hover:text-blue-700 font-semibold">here</Link>.
+            Have an account? Sign in&nbsp;<Link href="/login" className="text-blue-500 hover:text-blue-700 font-semibold">here</Link>.
             <Button className="ml-auto" type="submit">
               Register
             </Button>
