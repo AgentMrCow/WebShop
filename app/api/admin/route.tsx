@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { getServerSession } from 'next-auth';
 import { z } from "zod";
+import { verifyCsrfToken } from '@/app/api/csrf';
 import DOMPurify from 'isomorphic-dompurify';
 
 export const dynamic = 'force-dynamic'
@@ -47,6 +48,11 @@ export async function POST(request: NextRequest) {
   if (session?.user?.name !== "Admin") {
     return new NextResponse(JSON.stringify({ error: 'Not authenticated' }), { status: 401, headers: { "Content-Type": "application/json" } });
   }
+
+  if (!verifyCsrfToken()) {
+    return NextResponse.json({ error: 'Invalid CSRF token' }, { status: 403 })
+  }
+
   try {
     const body = await request.json();
     const { type, ...data } = body;

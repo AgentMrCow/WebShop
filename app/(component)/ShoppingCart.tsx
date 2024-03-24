@@ -8,12 +8,12 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Input } from "@/components/ui/input"
 import Image from 'next/image';
-import { useSession } from '@/app/(component)/SessionContext';
+import { useSession } from 'next-auth/react';
 
 
 
 export default function ShoppingCartPage() {
-    const session = useSession();
+    const { data: session, status } = useSession();
     var user = "Guest";
     if (!!session) {
         user = session.user?.email || "Guest";

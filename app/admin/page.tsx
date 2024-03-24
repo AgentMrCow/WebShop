@@ -23,8 +23,8 @@ import { TableHead, TableRow, TableHeader, TableCell, TableBody, Table } from "@
 import { SelectValue, SelectTrigger, SelectItem, SelectContent, Select } from "@/components/ui/select"
 import { CardTitle, CardDescription, CardHeader, CardContent, CardFooter, Card } from "@/components/ui/card"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { useSession } from '@/app/(component)/SessionContext';
-import { signOut } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
+
 
 interface ProductRowProps {
   product: Product;
@@ -450,7 +450,7 @@ const ImageUploadField: React.FC<ImageUploadFieldProps & { imagePreview: string,
 
 
 export default function AdminPage() {
-  const session = useSession();
+  const { data: session, status } = useSession();
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [productImagePreview, setProductImagePreview] = useState('');
@@ -520,14 +520,14 @@ export default function AdminPage() {
   });
 
 
-  if (session?.user?.name !== "Admin") {
+  if (session?.user?.name !== "Admin" || session.user.provider === "google" || session.user.provider === "github") {
     return (
       <div>
         <h1>Access Denied</h1>
         <p></p>
         <p>Hi, <strong>{session?.user?.email}</strong>,</p>
-        <p>You are not an Admin User</p>
-        <p>You do not have the necessary permissions to access the admin page.</p>
+        <p>You are login from <strong className="text-green-600">{session?.user?.provider}</strong> and not an <strong className="text-red-600">Admin User</strong></p>
+        <p>You <strong>do not</strong> have the necessary permissions to access the admin page.</p>
         <Button onClick={() => signOut()}>Click here to logout and relogin as an admin user</Button>
       </div>
     );
