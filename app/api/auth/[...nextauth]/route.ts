@@ -37,23 +37,37 @@ const handler = NextAuth({
       clientSecret: GITHUB_CLIENT_SECRET,
     }),
     CredentialsProvider({
+      name: 'Credentials',
       credentials: {
-        email: {},
-        password: {},
+        email: { label: "Email", type: "email", placeholder: "john.doe@example.com" },
+        password: { label: "Password", type: "password" },
       },
-      
+
       async authorize(credentials, req) {
         try {
 
           const validatedCredentials = loginFormSchema.parse(credentials);
+
+          if (!credentials?.email || !credentials?.password) {
+            return null;
+          }
 
           const user = await prisma.user.findUnique({
             where: {
               email: validatedCredentials.email,
             },
           });
+          if (!user) {
+            return null;
+          }
 
           if (user) {
+            if (user.password) {
+              const passwordCorrect = await bcrypt.compare(validatedCredentials.password, user.password)
+              if (!passwordCorrect) return null
+            } else {
+              return null
+            }
             const passwordCorrect = await compare(validatedCredentials.password, user.password);
 
             if (passwordCorrect) {
@@ -62,9 +76,9 @@ const handler = NextAuth({
                 email: user.email,
                 isAdmin: user.isAdmin,
                 name: user.isAdmin ? "Admin" : "User",
-                Cookie_name: "Auth",
-                sameSite: 'lax',
-                httpOnly: true
+                // Cookie_name: "Auth",
+                // sameSite: 'lax',
+                // httpOnly: true
               };
             }
           }

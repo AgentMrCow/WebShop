@@ -28,7 +28,7 @@ export async function POST(request: NextRequest, response: NextResponse) {
 
     if (!verifyCsrfToken()) {
         return NextResponse.json({ error: 'Invalid CSRF token' }, { status: 403 })
-      }
+    }
 
     const body = await request.json();
     let data;
@@ -60,10 +60,12 @@ export async function POST(request: NextRequest, response: NextResponse) {
         return new NextResponse(JSON.stringify({ error: 'User not found' }), { status: 404, headers: { "Content-Type": "application/json" } });
     }
 
-    const passwordValid = await compare(currentPassword, user.password);
+    if (user.password) {
+        const passwordValid = await compare(currentPassword, user.password);
 
-    if (!passwordValid) {
-        return new NextResponse(JSON.stringify({ error: 'Incorrect current password' }), { status: 403, headers: { "Content-Type": "application/json" } });
+        if (!passwordValid) {
+            return new NextResponse(JSON.stringify({ error: 'Incorrect current password' }), { status: 403, headers: { "Content-Type": "application/json" } });
+        }
     }
 
     const hashedPassword = await hash(newPassword, 10);
