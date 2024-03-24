@@ -8,7 +8,7 @@ You can find my demo video `IERG4210 Phase 4.mp4` on [https://www.youtube.com/wa
 
 ### 1. XSS (Cross-Site Scripting) Prevention
 
-- **Client-Side Input Restrictions**: Utilized `zod`, JavaScript and HTML5 attributes (like `maxlength`, `type`, and custom validation patterns) to restrict user input on all forms.
+- **Client-Side Input Restrictions**: Utilized `zod`, `TypeScript` and `shadcn/ui` (like `maxlength`, `type`, and custom validation patterns) to restrict user input on all forms.
 - **Server-Side Input Sanitization and Validation**: Integrated `zod` for schema validation and used `isomorphic-dompurify` to sanitize user inputs and prevent malicious scripts from being saved or executed.
 - **Output Sanitization**: Ensured that data displayed back to users is sanitized, especially in dynamic content, to prevent stored XSS attacks.
 
@@ -43,7 +43,39 @@ _Code Reference_: `auth` directory for authentication and session management imp
 ### 7. SSL/TLS Implementation
 
 - **Certificate Application**: Applied for and obtained an SSL certificate to enable HTTPS on the domain [https://secure.s24.ierg4210.ie.cuhk.edu.hk/](https://secure.s24.ierg4210.ie.cuhk.edu.hk/)
-- **Secure Configuration**: Configured Nginx to use strong algorithms and secure cipher suites, ensuring that all HTTP traffic is redirected to HTTPS.
+- **Secure Configuration**: Configured Nginx to use strong algorithms and secure cipher suites, ensuring that all HTTP traffic is redirected to HTTPS:
+```nginx
+server {
+    listen       443 ssl http2;
+    listen       [::]:443 ssl http2;
+    server_name  secure.s24.ierg4210.ie.cuhk.edu.hk;
+
+    ssl_certificate "***********";
+    ssl_certificate_key "***********";
+    ssl_session_cache shared:SSL:1m;
+    ssl_session_timeout  10m;
+    ssl_ciphers PROFILE=SYSTEM;
+    ssl_prefer_server_ciphers on;
+
+    add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data: https://lh3.googleusercontent.com https://avatars.githubusercontent.com; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; block-all-mixed-content; upgrade-insecure-requests;";
+    add_header X-Content-Type-Options "nosniff";
+    add_header Referrer-Policy "origin-when-cross-origin";
+    add_header X-DNS-Prefetch-Control "on";
+    add_header Permissions-Policy "camera=(), microphone=(), geolocation=()";
+    add_header X-Frame-Options "SAMEORIGIN";
+    add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload";
+
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+        proxy_hide_header X-Powered-By;
+    }
+}
+```
 
 ### Advanced Authentication System
 
