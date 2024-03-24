@@ -1,47 +1,58 @@
-# Webshop Phase 3
+# Secure Web Shop - Phase 4 Documentation
 
-## Overview
+## Introduction
 
-This project implements a dynamic, interactive web-based shopping platform with a focus on enhancing the user experience through seamless shopping list management without requiring page reloads. The implementation leverages a cart context to facilitate real-time updates to the shopping cart.
+You can find my demo video `IERG4210 Phase 4.mp4` on [https://www.youtube.com/watch?v=wojnivtoeDI](https://www.youtube.com/watch?v=wojnivtoeDI) or locally in the root directory. This document outlines the security measures implemented in the web application as part of Phase 4. The focus has been on mitigating common web security vulnerabilities such as XSS, SQL Injection, CSRF, and ensuring secure authentication and session management.
 
-## Key Features
+## Security Implementations
 
-- **Dynamic Shopping Cart**: Utilizes a cart context to enable real-time additions, updates, and deletions within the shopping cart without necessitating page reloads.
-- **Product Management**:
-  - Products can be added to the cart with a single click on the "Add to Cart" button.
-  - If a product is added multiple times, it is represented as a single item in the cart with an adjustable quantity.
-- **Cart Functionality**:
-  - Users can modify the quantity of each item directly within the cart using input fields and increment/decrement buttons.
-  - The shopping cart contents, including product IDs and quantities, are stored in the browser's localStorage for persistence.
-  - Product names and prices are fetched from the server using the product ID.
-  - The total cart amount is calculated and displayed client-side.
-- **Cart Restoration**: Upon page reload, the shopping cart's state is restored using stored data from localStorage.
-- **Infinite Scroll**: Implemented on the main product browsing page to facilitate seamless product discovery.
-- **Optimization**: Utilizes `next/image` for optimized and lazy-loaded images, enhancing page load performance.
+### 1. XSS (Cross-Site Scripting) Prevention
 
-## Implementation Details
+- **Client-Side Input Restrictions**: Utilized `zod`, JavaScript and HTML5 attributes (like `maxlength`, `type`, and custom validation patterns) to restrict user input on all forms.
+- **Server-Side Input Sanitization and Validation**: Integrated `zod` for schema validation and used `isomorphic-dompurify` to sanitize user inputs and prevent malicious scripts from being saved or executed.
+- **Output Sanitization**: Ensured that data displayed back to users is sanitized, especially in dynamic content, to prevent stored XSS attacks.
 
-### Cart Context
+_Code Reference_: `zod.tsx` for input validation and sanitization schemas.
 
-The cart context (`CartContext.tsx`) manages the state and interactions of the shopping cart, encapsulating logic for adding items, updating quantities, and storing cart data in localStorage.
+### 2. SQL Injection Mitigation
 
-### Components
+- **Parameterized Queries**: Used parameterized queries by `prisma` in all database interactions to separate SQL code from data, effectively preventing SQL injection.
 
-- **Header (`header.tsx`)**: Incorporates navigation and direct access to the shopping cart and user login page.
-- **Shopping Cart (`ShoppingCart.tsx`)**: Displays the items in the cart, allowing users to adjust quantities or remove items, with real-time updates to the total amount.
-- **Add To Cart Button (`AddToCartButton.tsx`)**: Enables users to add products to the cart, with logic to handle duplicates by updating quantities.
-- **Quantity Selector (`QuantitySelector.tsx`)**: Provides a UI for users to adjust the quantity of cart items, supporting both manual input and increment/decrement actions.
+### 3. CSRF (Cross-Site Request Forgery) Prevention
 
-## Setup and Configuration
+- **Secret Nonces**: Implemented secret nonces that are tied to the user session and validated on every form submission to prevent CSRF attacks by `next-auth`.
+- **Double Submit Cookie Pattern**: Utilized cookies to store CSRF tokens and validated them against the token sent in form submissions.
 
-- Ensure all dependencies are installed by running `npm install`.
-- Start the development server with `npm run dev` or `npm run build` + `npm start`
-- Access the application via `http://localhost:3000` or the configured port.
+### 4. Authentication and Session Management
 
-## Deployment
+- **User Authentication**: Implemented a secure login system with email and password. Used `bcrypt` for password hashing and comparisons.
+- **Session Management**: Utilized JWT for session management, ensuring tokens are stored securely using HttpOnly cookies. Implemented token rotation upon login to prevent session fixation attacks.
+- **Password Management**: Enabled users to change passwords securely, validating the current password before updating and ensuring logout post-password change.
 
-The application is deployed on an AWS EC2 instance, accessible at [http://s24.ierg4210.ie.cuhk.edu.hk/](http://s24.ierg4210.ie.cuhk.edu.hk/). The domain is configured to point to the EC2 instance's Elastic IP [http://52.203.52.33/](http://52.203.52.33/), ensuring seamless access to the deployed application.
+_Code Reference_: `auth` directory for authentication and session management implementations.
 
-### Nginx Configuration
+### 5. Secure Administration Panel
 
-The `nginx.conf` file is configured to serve the application efficiently, with specific rules for static file caching and proxying requests to the Next.js server. No further changes are required post-domain setup, as the application is fully functional and accessible via the provided domain.
+- **Access Control**: Restricted access to the administration panel to authenticated users with admin privileges only by `middleware.ts`.
+- **Session Validation**: Ensured that every request to the admin panel validates the session token to confirm administrative privileges.
+
+### 6. Session ID and Nonce Security
+
+- Ensured that all session IDs and nonces are generated using secure, non-predictable algorithms to prevent guessing attacks.
+
+### 7. SSL/TLS Implementation
+
+- **Certificate Application**: Applied for and obtained an SSL certificate to enable HTTPS on the domain [https://secure.s24.ierg4210.ie.cuhk.edu.hk/](https://secure.s24.ierg4210.ie.cuhk.edu.hk/)
+- **Secure Configuration**: Configured Nginx to use strong algorithms and secure cipher suites, ensuring that all HTTP traffic is redirected to HTTPS.
+
+### Advanced Authentication System
+
+- **Multi-Provider Authentication**: Integrated third-party OAuth providers (Google and GitHub) to offer users alternative login options, enhancing the user login experience and security.
+- **Session Management Enhancements**: Custom session handling logic with JWT, extending the session capabilities to include user roles (admin, user) and the authentication provider, allowing for more granular access control and personalized user experiences.
+- **Register**: Allow user to register and login with own account instead of hard code account.
+
+_Code Snippets_: `NextAuth` setup in `[...nextauth].ts`.
+
+## Conclusion
+
+The security measures implemented aim to protect the web application from common threats and vulnerabilities, ensuring the integrity, confidentiality, and availability of the user data and the application itself. Further enhancements and security audits are planned to continuously improve the security posture of the application.
