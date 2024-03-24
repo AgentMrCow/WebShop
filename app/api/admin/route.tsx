@@ -49,9 +49,9 @@ export async function POST(request: NextRequest) {
     return new NextResponse(JSON.stringify({ error: 'Not authenticated' }), { status: 401, headers: { "Content-Type": "application/json" } });
   }
 
-  if (!verifyCsrfToken()) {
-    return NextResponse.json({ error: 'Invalid CSRF token' }, { status: 403 })
-  }
+  // if (!verifyCsrfToken()) {
+  //   return NextResponse.json({ error: 'Invalid CSRF token' }, { status: 403 })
+  // }
 
   try {
     const body = await request.json();

@@ -26,9 +26,9 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
         return new NextResponse(JSON.stringify({ error: 'Not authenticated' }), { status: 401, headers: { "Content-Type": "application/json" } });
     }
 
-    if (!verifyCsrfToken()) {
-        return NextResponse.json({ error: 'Invalid CSRF token' }, { status: 403 })
-      }
+    // if (!verifyCsrfToken()) {
+    //     return NextResponse.json({ error: 'Invalid CSRF token' }, { status: 403 })
+    // }
 
     const categoryId = parseInt(params.id, 10);
     if (isNaN(categoryId)) {
@@ -77,9 +77,9 @@ export async function DELETE(
         return new NextResponse(JSON.stringify({ error: 'Not authenticated' }), { status: 401, headers: { "Content-Type": "application/json" } });
     }
 
-    if (!verifyCsrfToken()) {
-        return NextResponse.json({ error: 'Invalid CSRF token' }, { status: 403 })
-      }
+    // if (!verifyCsrfToken()) {
+    //     return NextResponse.json({ error: 'Invalid CSRF token' }, { status: 403 })
+    // }
 
     const categoryId = parseInt(params.id, 10);
 

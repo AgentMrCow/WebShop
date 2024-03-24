@@ -32,8 +32,8 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
               <main>
                 <section className="my-8">
                   {children}
-                  <Analytics />
-                  <SpeedInsights />
+                  {/* <Analytics />
+                  <SpeedInsights /> */}
                 </section>
               </main>
 
