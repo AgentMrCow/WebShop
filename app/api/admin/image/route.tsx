@@ -13,9 +13,9 @@ export async function POST(request: NextRequest) {
     return new NextResponse(JSON.stringify({ error: 'Not authenticated' }), { status: 401, headers: { "Content-Type": "application/json" } });
   }
 
-  if (!verifyCsrfToken()) {
-    return NextResponse.json({ error: 'Invalid CSRF token' }, { status: 403 })
-  }
+  // if (!verifyCsrfToken()) {
+  //   return NextResponse.json({ error: 'Invalid CSRF token' }, { status: 403 })
+  // }
 
   const data = await request.formData()
   const file: File | null = data.get('file') as unknown as File
