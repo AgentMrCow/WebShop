@@ -57,31 +57,24 @@ const handler = NextAuth({
               email: validatedCredentials.email,
             },
           });
-          if (!user) {
+          if (!user || !user.password) {
             return null;
           }
 
-          if (user) {
-            if (user.password) {
-              const passwordCorrect = await bcrypt.compare(validatedCredentials.password, user.password)
-              if (!passwordCorrect) return null
-            } else {
-              return null
-            }
-            const passwordCorrect = await compare(validatedCredentials.password, user.password);
-
-            if (passwordCorrect) {
-              return {
-                id: user.id.toString(),
-                email: user.email,
-                isAdmin: user.isAdmin,
-                name: user.isAdmin ? "Admin" : "User",
-                // Cookie_name: "Auth",
-                // sameSite: 'lax',
-                // httpOnly: true
-              };
-            }
+          const passwordCorrect = await compare(validatedCredentials.password, user.password);
+          if (!passwordCorrect) {
+            return null;
           }
+
+          return {
+            id: user.id.toString(),
+            email: user.email,
+            isAdmin: user.isAdmin,
+            name: user.isAdmin ? "Admin" : "User",
+            // Cookie_name: "Auth",
+            // sameSite: 'lax',
+            // httpOnly: true
+          };
 
           return null;
 
