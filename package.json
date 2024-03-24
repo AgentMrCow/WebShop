@@ -43,7 +43,6 @@
     "isomorphic-dompurify": "^2.6.0",
     "lucide-react": "^0.331.0",
     "next": "14.1.0",
-    "next-auth": "^4.24.7",
     "react": "^18",
     "react-bootstrap": "^2.10.0",
     "react-dom": "^18",
