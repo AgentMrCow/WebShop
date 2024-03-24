@@ -60,9 +60,21 @@ const CategoriesComponent: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                     {categories.map((category, index) => {
                         const isHovered = index === hoveredCategoryIndex;
-                        const bgImageName = `image${(index % 3) + 1}x${Math.floor(index / 3) + 1}.png`;
-                        const bgImage = width !== undefined && width <= 768 ? category.image : (isHovered || !bgImageName ? category.image : bgImageName);
 
+                        // Ensure X is within 1-3 range
+                        const xValue = (index % 3) + 1;
+
+                        // Ensure Y is within 1-3 range, capping at 3
+                        const yValue = Math.floor(index / 3) + 1; // Remove the capping to determine the actual row
+
+                        // Determine if the index is beyond a 3x3 grid
+                        const isBeyondGrid = yValue > 3;
+
+                        // Construct the background image name, but only if within a 3x3 grid
+                        const bgImageName = !isBeyondGrid ? `image${xValue}x${Math.min(yValue, 3)}.png` : null;
+
+                        // Determine the background image based on screen size, hover state, and grid position
+                        const bgImage = (width !== undefined && width <= 768) || isHovered || isBeyondGrid || !bgImageName ? category.image : bgImageName;
                         return (
                             <Link key={index} href={category.link}>
                                 <motion.div

@@ -5,10 +5,10 @@ import { Inter } from 'next/font/google';
 import dynamic from 'next/dynamic';
 import { Toaster } from "@/components/ui/toaster"
 import { CartProvider } from '@/app/(component)/CartContext';
-import { ClerkProvider } from '@clerk/nextjs'
-import { getServerSession } from 'next-auth';
-import { SessionProvider } from '@/app/(component)/SessionContext'
+import { SessionProvider } from '@/app/(component)/SessionContext';
 import Header from '@/app/(component)/header';
+import { Analytics } from "@vercel/analytics/react"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import Link from 'next/link';
 import "./globals.css";
 
@@ -20,10 +20,8 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode; }>) {
-  const session = await getServerSession();
   return (
-    // <ClerkProvider>
-    <SessionProvider session={session}>
+    <SessionProvider>
       <html lang="en">
         <body className={inter.className}>
           <CartProvider>
@@ -34,6 +32,8 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
               <main>
                 <section className="my-8">
                   {children}
+                  <Analytics />
+                  <SpeedInsights />
                 </section>
               </main>
 
@@ -49,7 +49,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           </CartProvider>
         </body>
       </html>
-    </SessionProvider>
-    // </ClerkProvider>
+      </SessionProvider>
+
   );
 };

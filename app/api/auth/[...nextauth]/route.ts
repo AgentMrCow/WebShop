@@ -7,6 +7,22 @@ import { PrismaClient } from '@prisma/client';
 import { loginFormSchema } from '@/app/zod';
 import GoogleProvider from 'next-auth/providers/google'
 import GitHubProvider from 'next-auth/providers/github';
+import { Session } from "next-auth";
+import { JWT } from "next-auth/jwt";
+
+// Extend the User type
+interface ExtendedUser {
+  name?: string | null;
+  email?: string | null;
+  image?: string | null;
+  isAdmin?: boolean;
+  provider?: string;
+}
+
+// Extend the Session type to include the extended user
+interface ExtendedSession extends Session {
+  user?: ExtendedUser;
+}
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID!
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET!
@@ -88,6 +104,16 @@ const handler = NextAuth({
       },
     }),
   ],
+  // callbacks: {
+  //   async session({ session, token, user }: { session: ExtendedSession; token: JWT; user: any }): Promise<ExtendedSession> {
+  //     if (session.user) {
+  //       session.user.isAdmin = user.isAdmin;
+  //       session.user.provider = user.provider;
+  //     }
+  //     console.log(session)
+  //     return session;
+  //   },
+  // }
   // cookies: {
   //   sessionToken: {
   //     name: `__Secure-next-auth.session-token`,
@@ -116,37 +142,32 @@ const handler = NextAuth({
   //     }
   //   },
   // },
-  // callbacks: {
-  //   session: ({ session, token }) => {
-  //     console.log('Session Callback', { session, token })
-  //     return {
-  //       ...session,
-  //       user: {
-  //         ...session.user,
-  //         id: token.id,
-  //         isAdmin: token.isAdmin,
-  //         Cookie_name: token.Cokkie_name,
-  //         sameSite: token.sameSite,
-  //         httpOnly: token.httpOnly
-  //       }
-  //     }
-  //   },
-  //   jwt: ({ token, user }) => {
-  //     console.log('JWT Callback', { token, user })
-  //     if (user) {
-  //       const u = user as unknown as any
-  //       return {
-  //         ...token,
-  //         id: u.id,
-  //         isAdmin: u.isAdmin,
-  //         Cookie_name: u.Cookie_name,
-  //         sameSite: u.sameSite,
-  //         httpOnly: u.httpOnly
-  //       }
-  //     }
-  //     return token
-  //   }
-  // }
+callbacks: {
+  session: async ({ session, token }) => {
+    console.log('Inside Session Callback', { session, token });
+    if (session?.user) {
+      session.user.id = token.id as string;
+      session.user.isAdmin = token.isAdmin as boolean;
+      session.user.provider = token.provider as string;
+    }
+    
+    console.log('Updated Session', session);
+    return session;
+  },
+  jwt: async ({ token, user, account }) => {
+    console.log('Inside JWT Callback', { token, user, account });
+    if (user) {
+      token.id = user.id;
+      token.isAdmin = user.isAdmin;
+    }
+    if (account) {
+      token.provider = account.provider;
+    }
+    console.log('Updated Token', token);
+    return token;
+  }
+}
+
 })
 
 export { handler as GET, handler as POST };

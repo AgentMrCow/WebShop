@@ -4,12 +4,17 @@ import { writeFile } from 'fs/promises'
 import { NextRequest, NextResponse } from 'next/server'
 import path from 'path';
 import { getServerSession } from 'next-auth';
+import { verifyCsrfToken } from '@/app/api/csrf';
 export const dynamic = 'force-dynamic'
 
 export async function POST(request: NextRequest) {
   const session = await getServerSession();
   if (session?.user?.name !== "Admin") {
     return new NextResponse(JSON.stringify({ error: 'Not authenticated' }), { status: 401, headers: { "Content-Type": "application/json" } });
+  }
+
+  if (!verifyCsrfToken()) {
+    return NextResponse.json({ error: 'Invalid CSRF token' }, { status: 403 })
   }
 
   const data = await request.formData()
