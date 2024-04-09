@@ -1,5 +1,6 @@
 // @/app/(component)/CartContext.tsx
 "use client"
+
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 interface CartProviderProps {
@@ -26,17 +27,16 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         setItems((prevItems) => {
             const itemExists = prevItems.find((item) => item.id === product.id);
             if (itemExists) {
+                const newQuantity = Math.min(itemExists.quantity + quantity, 99999);
                 return prevItems.map((item) =>
-                    item.id === product.id
-                        ? { ...item, quantity: item.quantity + quantity }
-                        : item
+                    item.id === product.id ? { ...item, quantity: newQuantity } : item
                 );
             } else {
                 const newItem = {
                     id: product.id,
                     name: product.name,
                     price: product.price,
-                    quantity,
+                    quantity: Math.min(quantity, 99999),
                     description: product.description,
                     image: product.image,
                     categoryId: product.categoryId,
@@ -46,9 +46,12 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         });
     };
 
-
     const updateItemQuantity = (id: number, quantity: number) => {
-        setItems(prevItems => prevItems.map(item => item.id === id ? { ...item, quantity } : item));
+        const clampedQuantity = Math.min(quantity, 99999);
+
+        setItems((prevItems) =>
+            prevItems.map((item) => (item.id === id ? { ...item, quantity: clampedQuantity } : item))
+        );
     };
 
     const removeItem = (id: number) => {

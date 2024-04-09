@@ -47,10 +47,12 @@ const handler = NextAuth({
     GoogleProvider({
       clientId: GOOGLE_CLIENT_ID,
       clientSecret: GOOGLE_CLIENT_SECRET,
+      allowDangerousEmailAccountLinking: true,
     }),
     GitHubProvider({
       clientId: GITHUB_CLIENT_ID,
       clientSecret: GITHUB_CLIENT_SECRET,
+      allowDangerousEmailAccountLinking: true,
     }),
     CredentialsProvider({
       name: 'Credentials',
@@ -142,31 +144,31 @@ const handler = NextAuth({
   //     }
   //   },
   // },
-callbacks: {
-  session: async ({ session, token }) => {
-    console.log('Inside Session Callback', { session, token });
-    if (session?.user) {
-      session.user.id = token.id as string;
-      session.user.isAdmin = token.isAdmin as boolean;
-      session.user.provider = token.provider as string;
+  callbacks: {
+    session: async ({ session, token }) => {
+      console.log('Inside Session Callback', { session, token });
+      if (session?.user) {
+        session.user.id = token.id as string;
+        session.user.isAdmin = token.isAdmin as boolean;
+        session.user.provider = token.provider as string;
+      }
+
+      console.log('Updated Session', session);
+      return session;
+    },
+    jwt: async ({ token, user, account }) => {
+      console.log('Inside JWT Callback', { token, user, account });
+      if (user) {
+        token.id = user.id;
+        token.isAdmin = user.isAdmin;
+      }
+      if (account) {
+        token.provider = account.provider;
+      }
+      console.log('Updated Token', token);
+      return token;
     }
-    
-    console.log('Updated Session', session);
-    return session;
-  },
-  jwt: async ({ token, user, account }) => {
-    console.log('Inside JWT Callback', { token, user, account });
-    if (user) {
-      token.id = user.id;
-      token.isAdmin = user.isAdmin;
-    }
-    if (account) {
-      token.provider = account.provider;
-    }
-    console.log('Updated Token', token);
-    return token;
   }
-}
 
 })
 

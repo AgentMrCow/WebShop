@@ -9,11 +9,14 @@ import { Separator } from "@/components/ui/separator"
 import { Input } from "@/components/ui/input"
 import Image from 'next/image';
 import { useSession } from 'next-auth/react';
-
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 
 export default function ShoppingCartPage() {
     const { data: session, status } = useSession();
+    const pathname = usePathname();
+    const isCheckoutPage = pathname === '/checkout';
     var user = "Guest";
     if (!!session) {
         user = session.user?.email || "Guest";
@@ -108,11 +111,15 @@ export default function ShoppingCartPage() {
                         <div>${calculateTotal()}</div>
                     </div>
                 </CardContent>
-                <CardFooter>
-                    <Button className="w-full" size="lg">
-                        Proceed to Checkout
-                    </Button>
-                </CardFooter>
+                {!isCheckoutPage && (
+                    <CardFooter>
+                        <Link className="w-full" href="/checkout">
+                            <Button className="w-full" size="lg">
+                                Proceed to Checkout
+                            </Button>
+                        </Link>
+                    </CardFooter>
+                )}
             </Card>
         </div>
     );

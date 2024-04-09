@@ -68,7 +68,7 @@ const CategoryPage: React.FC<Params> = ({ params }) => {
                         <Card key={product.id} className="h-full">
                             <CardHeader className="p-0">
                                 <Link href={`/category/${category}/${product.slug}`} passHref>
-                                    <Image src={product.image} alt={product.name} width={1024} height={1024} layout="responsive" />
+                                    <Image src={product.image} alt={product.name} width={1024} height={1024} />
                                 </Link>
                             </CardHeader>
                             <CardContent className="pt-4 flex">
@@ -81,9 +81,11 @@ const CategoryPage: React.FC<Params> = ({ params }) => {
                                     ${product.price}
                                 </CardDescription>
                             </CardContent>
-                            <CardFooter>
+                            <CardFooter className="flex justify-between items-center">
                                 <QuantitySelector quantity={quantity} onQuantityChange={(newQuantity) => handleQuantityChange(product.id, newQuantity)} />
-                                <AddToCartButton product={product} quantity={quantity} />
+                                <div className="flex-shrink-0">
+                                    <AddToCartButton product={product} quantity={quantity} />
+                                </div>
                             </CardFooter>
                         </Card>
                     );
