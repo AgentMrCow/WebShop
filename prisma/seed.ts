@@ -10,11 +10,19 @@ async function main() {
     await prisma.user.deleteMany({});
     await prisma.product.deleteMany({});
     await prisma.category.deleteMany({});
+    await prisma.account.deleteMany({});
+    await prisma.verificationToken.deleteMany({});
+    await prisma.order.deleteMany({});
+    await prisma.session.deleteMany({});
     
     // Reset autoincrement ID counters
     await prisma.$executeRawUnsafe('DELETE FROM sqlite_sequence WHERE name="User"');
     await prisma.$executeRawUnsafe('DELETE FROM sqlite_sequence WHERE name="Category"');
     await prisma.$executeRawUnsafe('DELETE FROM sqlite_sequence WHERE name="Product"');
+    await prisma.$executeRawUnsafe('DELETE FROM sqlite_sequence WHERE name="Account"');
+    await prisma.$executeRawUnsafe('DELETE FROM sqlite_sequence WHERE name="VerificationToken"');
+    await prisma.$executeRawUnsafe('DELETE FROM sqlite_sequence WHERE name="Order"');
+    await prisma.$executeRawUnsafe('DELETE FROM sqlite_sequence WHERE name="Session"');
     await prisma.$executeRawUnsafe('VACUUM');
 
     // Define users

@@ -5,7 +5,7 @@ import { Inter } from 'next/font/google';
 import dynamic from 'next/dynamic';
 import { Toaster } from "@/components/ui/toaster"
 import { CartProvider } from '@/app/(component)/CartContext';
-import { SessionProvider } from '@/app/(component)/SessionContext';
+import { SessionProvider, PayPalScriptProvider } from '@/app/(component)/SessionContext';
 import Header from '@/app/(component)/header';
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
@@ -22,34 +22,40 @@ export const metadata: Metadata = {
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode; }>) {
   return (
     <SessionProvider>
-      <html lang="en">
-        <body className={inter.className}>
-          <CartProvider>
-            <div className='mx-auto max-w-screen-xl px-4'>
+      <PayPalScriptProvider
+        options={{
+          clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID as string,
+        }}
+      >
+        <html lang="en">
+          <body className={inter.className}>
+            <CartProvider>
+              <div className='mx-auto max-w-screen-xl px-4'>
 
-              <Header />
+                <Header />
 
-              <main>
-                <section className="my-8">
-                  {children}
-                  {/* <Analytics />
+                <main>
+                  <section>
+                    {children}
+                    {/* <Analytics />
                   <SpeedInsights /> */}
-                </section>
-              </main>
+                  </section>
+                </main>
 
-              <footer className="py-4 my-8">
-                <div className="flex justify-center border-b border-gray-200 pb-4 mb-4">
-                  <Link href="#" className="mx-2 text-gray-500 hover:text-gray-700">Return to Top</Link>
-                </div>
-                <p className="text-center text-gray-500">Copyright © 2024 Niu Ka Ngai. All rights reserved.</p>
-              </footer>
+                <footer className="py-4 my-8">
+                  <div className="flex justify-center border-b border-gray-200 pb-4 mb-4">
+                    <Link href="#" className="mx-2 text-gray-500 hover:text-gray-700">Return to Top</Link>
+                  </div>
+                  <p className="text-center text-gray-500">Copyright © 2024 Niu Ka Ngai. All rights reserved.</p>
+                </footer>
 
-            </div>
-            <Toaster />
-          </CartProvider>
-        </body>
-      </html>
-      </SessionProvider>
+              </div>
+              <Toaster />
+            </CartProvider>
+          </body>
+        </html>
+      </PayPalScriptProvider>
+    </SessionProvider>
 
   );
 };

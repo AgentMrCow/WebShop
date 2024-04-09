@@ -12,7 +12,7 @@ const QuantitySelector: React.FC<QuantitySelectorProps> = ({ quantity, onQuantit
     }, [quantity]);
 
     const handleIncrement = () => {
-        const newQuantity = localQuantity + 1;
+        const newQuantity = localQuantity < 99999 ? localQuantity + 1 : 99999;
         setLocalQuantity(newQuantity);
         onQuantityChange(newQuantity);
     };
@@ -25,8 +25,12 @@ const QuantitySelector: React.FC<QuantitySelectorProps> = ({ quantity, onQuantit
 
     const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newQuantity = parseInt(e.target.value, 10) || 1;
-        setLocalQuantity(newQuantity);
-        onQuantityChange(newQuantity);
+        if (newQuantity <= 99999) {
+            setLocalQuantity(newQuantity);
+            onQuantityChange(newQuantity);
+        } else {
+            e.preventDefault();
+        }
     };
 
     return (
@@ -38,6 +42,7 @@ const QuantitySelector: React.FC<QuantitySelectorProps> = ({ quantity, onQuantit
                 value={localQuantity}
                 onChange={handleQuantityChange}
                 min="1"
+                max="99999"
             />
             <Button onClick={handleIncrement} variant={"outline"} className="px-2 py-1 text-sm">+</Button>
 
