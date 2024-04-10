@@ -1,24 +1,22 @@
 <p align="center">
-  <img src="https://github.com/AgentMrCow/WebShop/blob/main/logo/nextdotjs.svg" alt="Next.js" width="40" height="40"/>
-  <img src="https://github.com/AgentMrCow/WebShop/blob/main/logo/react.svg" alt="React" width="40" height="40"/>
-  <img src="https://github.com/AgentMrCow/WebShop/blob/main/logo/nodedotjs.svg" alt="Node.js" width="40" height="40"/>
-  <img src="https://github.com/AgentMrCow/WebShop/blob/main/logo/typescript.svg" alt="TypeScript" width="40" height="40"/>
-  <img src="https://github.com/AgentMrCow/WebShop/blob/main/logo/javascript.svg" alt="JavaScript" width="40" height="40"/>
+  <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/NextJS-Dark.svg" alt="Next.js" width="40" height="40"/>
+  <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/React-Dark.svg" alt="React" width="40" height="40"/>
+  <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/NodeJS-Dark.svg" alt="Node.js" width="40" height="40"/>
+  <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/TypeScript.svg" alt="TypeScript" width="40" height="40"/>
+  <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/JavaScript.svg" alt="JavaScript" width="40" height="40"/>
   <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/Prisma.svg" alt="Prisma" width="40" height="40"/>
   <img src="https://github.com/AgentMrCow/WebShop/blob/main/logo/zod.svg" alt="Zod" width="40" height="40"/>
   <img src="https://github.com/AgentMrCow/WebShop/blob/main/logo/reacthookform.svg" alt="React Hook Form" width="40" height="40"/>
   <img src="https://github.com/AgentMrCow/WebShop/blob/main/logo/axios.svg" alt="Axios" width="40" height="40"/>
   <img src="https://github.com/AgentMrCow/WebShop/blob/main/logo/shadcnui.svg" alt="Shadcn UI" width="40" height="40"/>
   <img src="https://github.com/AgentMrCow/WebShop/blob/main/logo/framer.svg" alt="Framer Motion" width="40" height="40"/>
-  <img src="https://github.com/AgentMrCow/WebShop/blob/main/logo/html5.svg" alt="HTML5" width="40" height="40"/>
-  <img src="https://github.com/AgentMrCow/WebShop/blob/main/logo/css3.svg" alt="CSS3" width="40" height="40"/>
-  <img src="https://github.com/AgentMrCow/WebShop/blob/main/logo/tailwindcss.svg" alt="Tailwind CSS" width="40" height="40"/>
+  <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/HTML.svg" alt="HTML5" width="40" height="40"/>
+  <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/CSS.svg" alt="CSS3" width="40" height="40"/>
+  <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/TailwindCSS-Dark.svg" alt="Tailwind CSS" width="40" height="40"/>
   <img src="https://github.com/AgentMrCow/WebShop/blob/main/logo/auth0.svg" alt="Auth0" width="40" height="40"/>
   <img src="https://github.com/AgentMrCow/WebShop/blob/main/logo/paypal.svg" alt="PayPal" width="40" height="40"/>
-  <img src="https://github.com/AgentMrCow/WebShop/blob/main/logo/sqlite.svg" alt="SQLite" width="40" height="40"/>
-  <img src="https://github.com/AgentMrCow/WebShop/blob/main/logo/vercel.svg" alt="Vercel" width="40" height="40"/>
-  <img src="https://github.com/AgentMrCow/WebShop/blob/main/logo/github.svg" alt="GitHub" width="40" height="40"/>
-  <img src="https://github.com/AgentMrCow/WebShop/blob/main/logo/google.svg" alt="Google" width="40" height="40"/>
+  <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/SQLite.svg" alt="SQLite" width="40" height="40"/>
+  <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/Vercel-Dark.svg" alt="Vercel" width="40" height="40"/>
 </p>
 
 # Secure Web Shop - Phase 4 Documentation
