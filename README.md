@@ -4,7 +4,7 @@
   <img src="https://github.com/AgentMrCow/WebShop/blob/main/logo/nodedotjs.svg" alt="Node.js" width="40" height="40"/>
   <img src="https://github.com/AgentMrCow/WebShop/blob/main/logo/typescript.svg" alt="TypeScript" width="40" height="40"/>
   <img src="https://github.com/AgentMrCow/WebShop/blob/main/logo/javascript.svg" alt="JavaScript" width="40" height="40"/>
-  <img src="https://github.com/AgentMrCow/WebShop/blob/main/logo/prisma.svg" alt="Prisma" width="40" height="40"/>
+  <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/Prisma.svg" alt="Prisma" width="40" height="40"/>
   <img src="https://github.com/AgentMrCow/WebShop/blob/main/logo/zod.svg" alt="Zod" width="40" height="40"/>
   <img src="https://github.com/AgentMrCow/WebShop/blob/main/logo/reacthookform.svg" alt="React Hook Form" width="40" height="40"/>
   <img src="https://github.com/AgentMrCow/WebShop/blob/main/logo/axios.svg" alt="Axios" width="40" height="40"/>
