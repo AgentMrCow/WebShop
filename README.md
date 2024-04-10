@@ -1,3 +1,9 @@
+<style>
+  img {
+    pointer-events: none;
+  }
+</style>
+
 <p align="center">
   <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/NextJS-Dark.svg" alt="Next.js" title="Next.js" width="40" height="40" style="pointer-events: none;"/>
   <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/React-Dark.svg" alt="React" width="40" height="40"/>
