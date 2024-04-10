@@ -5,18 +5,18 @@
   <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/TypeScript.svg" alt="TypeScript" width="40" height="40"/>
   <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/JavaScript.svg" alt="JavaScript" width="40" height="40"/>
   <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/Prisma.svg" alt="Prisma" width="40" height="40"/>
-  <img src="https://github.com/AgentMrCow/WebShop/blob/main/logo/zod.svg" alt="Zod" width="40" height="40"/>
-  <img src="https://github.com/AgentMrCow/WebShop/blob/main/logo/reacthookform.svg" alt="React Hook Form" width="40" height="40"/>
-  <img src="https://github.com/AgentMrCow/WebShop/blob/main/logo/axios.svg" alt="Axios" width="40" height="40"/>
-  <img src="https://github.com/AgentMrCow/WebShop/blob/main/logo/shadcnui.svg" alt="Shadcn UI" width="40" height="40"/>
-  <img src="https://github.com/AgentMrCow/WebShop/blob/main/logo/framer.svg" alt="Framer Motion" width="40" height="40"/>
+  <img src="https://zod.dev/logo.svg" alt="Zod" width="40" height="40"/>
+  <img src="https://react-hook-form.com/images/logo/react-hook-form-logo-only.svg" alt="React Hook Form" width="40" height="40"/>
+  <img src="https://user-images.githubusercontent.com/8939680/57233882-20344080-6fe5-11e9-9086-d20a955bed59.png" alt="Axios" width="40" height="40"/>
+  <img src="https://avatars.githubusercontent.com/u/139895814" alt="Shadcn UI" width="40" height="40"/>
+  <img src="https://bestofjs.org/logos/motion.dark.svg" alt="Framer Motion" width="40" height="40"/>
   <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/HTML.svg" alt="HTML5" width="40" height="40"/>
   <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/CSS.svg" alt="CSS3" width="40" height="40"/>
   <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/TailwindCSS-Dark.svg" alt="Tailwind CSS" width="40" height="40"/>
-  <img src="https://github.com/AgentMrCow/WebShop/blob/main/logo/auth0.svg" alt="Auth0" width="40" height="40"/>
-  <img src="https://github.com/AgentMrCow/WebShop/blob/main/logo/paypal.svg" alt="PayPal" width="40" height="40"/>
+  <img src="https://authjs.dev/img/logo/logo-sm.webp" alt="Auth.js" width="40" height="40"/>
+  <img src="https://cdn-icons-png.flaticon.com/512/174/174861.png" alt="PayPal" width="40" height="40"/>
   <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/SQLite.svg" alt="SQLite" width="40" height="40"/>
-  <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/Vercel-Dark.svg" alt="Vercel" width="40" height="40"/>
+  <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/AWS-Dark.svg" alt="AWS" width="40" height="40"/>
 </p>
 
 # Secure Web Shop - Phase 4 Documentation
