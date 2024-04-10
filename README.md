@@ -1,24 +1,22 @@
-![Next.js](https://github.com/tandpfun/skill-icons/blob/main/icons/NextJS-Dark.svg "Next.js")
-
 <p align="center">
-  <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/NextJS-Dark.svg" alt="Next.js" title="Next.js" width="40" height="40"/>
-  <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/React-Dark.svg" alt="React" width="40" height="40"/>
-  <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/NodeJS-Dark.svg" alt="Node.js" width="40" height="40"/>
-  <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/TypeScript.svg" alt="TypeScript" width="40" height="40"/>
-  <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/JavaScript.svg" alt="JavaScript" width="40" height="40"/>
-  <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/Prisma.svg" alt="Prisma" width="40" height="40"/>
-  <img src="https://zod.dev/logo.svg" alt="Zod" width="40" height="40"/>
-  <img src="https://react-hook-form.com/images/logo/react-hook-form-logo-only.svg" alt="React Hook Form" width="40" height="40"/>
-  <img src="https://user-images.githubusercontent.com/8939680/57233882-20344080-6fe5-11e9-9086-d20a955bed59.png" alt="Axios" width="40" height="40"/>
-  <img src="https://avatars.githubusercontent.com/u/139895814" alt="Shadcn UI" width="40" height="40"/>
-  <img src="https://bestofjs.org/logos/motion.dark.svg" alt="Framer Motion" width="40" height="40"/>
-  <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/HTML.svg" alt="HTML5" width="40" height="40"/>
-  <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/CSS.svg" alt="CSS3" width="40" height="40"/>
-  <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/TailwindCSS-Dark.svg" alt="Tailwind CSS" width="40" height="40"/>
-  <img src="https://authjs.dev/img/logo/logo-sm.webp" alt="Auth.js" width="40" height="40"/>
-  <img src="https://cdn-icons-png.flaticon.com/512/174/174861.png" alt="PayPal" width="40" height="40"/>
-  <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/SQLite.svg" alt="SQLite" width="40" height="40"/>
-  <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/AWS-Dark.svg" alt="AWS" width="40" height="40"/>
+  <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/NextJS-Dark.svg" alt="Next.js logo" title="Next.js - The React Framework" width="40" height="40"/>
+  <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/React-Dark.svg" alt="React logo" title="React - A JavaScript library for building user interfaces" width="40" height="40"/>
+  <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/NodeJS-Dark.svg" alt="Node.js logo" title="Node.js - JavaScript runtime built on Chrome's V8 JavaScript engine" width="40" height="40"/>
+  <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/TypeScript.svg" alt="TypeScript logo" title="TypeScript - A typed superset of JavaScript" width="40" height="40"/>
+  <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/JavaScript.svg" alt="JavaScript logo" title="JavaScript - High-level, often just-in-time compiled, and multi-paradigm" width="40" height="40"/>
+  <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/Prisma.svg" alt="Prisma logo" title="Prisma - Next-generation ORM for Node.js and TypeScript" width="40" height="40"/>
+  <img src="https://zod.dev/logo.svg" alt="Zod logo" title="Zod - TypeScript-first schema validation with static type inference" width="40" height="40"/>
+  <img src="https://react-hook-form.com/images/logo/react-hook-form-logo-only.svg" alt="React Hook Form logo" title="React Hook Form - Performant, flexible, and extensible forms with easy-to-use validation" width="40" height="40"/>
+  <img src="https://user-images.githubusercontent.com/8939680/57233882-20344080-6fe5-11e9-9086-d20a955bed59.png" alt="Axios logo" title="Axios - Promise-based HTTP client for the browser and node.js" width="40" height="40"/>
+  <img src="https://avatars.githubusercontent.com/u/139895814" alt="Shadcn UI logo" title="Shadcn UI - A modern UI library for React" width="40" height="40"/>
+  <img src="https://bestofjs.org/logos/motion.dark.svg" alt="Framer Motion logo" title="Framer Motion - An animation library for React" width="40" height="40"/>
+  <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/HTML.svg" alt="HTML5 logo" title="HTML5 - Standard markup language for documents designed to be displayed in a web browser" width="40" height="40"/>
+  <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/CSS.svg" alt="CSS3 logo" title="CSS3 - Style sheet language used for describing the presentation of a document written in a markup language" width="40" height="40"/>
+  <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/TailwindCSS-Dark.svg" alt="Tailwind CSS logo" title="Tailwind CSS - A utility-first CSS framework for rapid UI development" width="40" height="40"/>
+  <img src="https://authjs.dev/img/logo/logo-sm.webp" alt="Auth.js logo" title="Auth.js - JavaScript API for authentication" width="40" height="40"/>
+  <img src="https://cdn-icons-png.flaticon.com/512/174/174861.png" alt="PayPal logo" title="PayPal - Online payment system" width="40" height="40"/>
+  <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/SQLite.svg" alt="SQLite logo" title="SQLite - A C-language library that implements a small, fast, self-contained, high-reliability, full-featured, SQL database engine" width="40" height="40"/>
+  <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/AWS-Dark.svg" alt="AWS logo" title="AWS (Amazon Web Services) - Secure cloud services platform" width="40" height="40"/>
 </p>
 
 # Secure Web Shop - Phase 4 Documentation
