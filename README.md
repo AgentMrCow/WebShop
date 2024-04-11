@@ -13,7 +13,7 @@
   <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/HTML.svg" alt="HTML5 logo" title="HTML5 - Standard markup language for documents designed to be displayed in a web browser" width="40" height="40"/>
   <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/CSS.svg" alt="CSS3 logo" title="CSS3 - Style sheet language used for describing the presentation of a document written in a markup language" width="40" height="40"/>
   <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/TailwindCSS-Dark.svg" alt="Tailwind CSS logo" title="Tailwind CSS - A utility-first CSS framework for rapid UI development" width="40" height="40"/>
-  <img src="https://authjs.dev/img/logo/logo-sm.webp" alt="Auth.js logo" title="Auth.js - JavaScript API for authentication" width="40" height="40"/>
+  <img src="https://authjs.dev/img/etc/logo-sm.webp" alt="Auth.js logo" title="Auth.js - JavaScript API for authentication" width="40" height="40"/>
   <img src="https://cdn-icons-png.flaticon.com/512/174/174861.png" alt="PayPal logo" title="PayPal - Online payment system" width="40" height="40"/>
   <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/SQLite.svg" alt="SQLite logo" title="SQLite - SQL database engine" width="40" height="40"/>
   <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/AWS-Dark.svg" alt="AWS logo" title="AWS (Amazon Web Services) - Secure cloud services platform" width="40" height="40"/>
