@@ -188,7 +188,14 @@ export default function LoginComponent() {
                     <CardContent>
                         {
                             session.user?.image ? (
-                                <img src={session.user.image} alt="Profile Picture" className="w-20 h-20 rounded-full mx-auto" />
+                                <div className="w-20 h-20 rounded-full mx-auto relative overflow-hidden">
+                                    <Image
+                                        src={session.user.image}
+                                        alt="Profile Picture"
+                                        layout="fill"
+                                        objectFit="cover"
+                                    />
+                                </div>
                             ) : (
                                 <User className="w-20 h-20 mx-auto" />
                             )
@@ -414,11 +421,11 @@ export default function LoginComponent() {
         return (
             <div className="flex sm:flex-row flex-col-reverse">
                 <div className="flex-1 hidden sm:block relative">
-                    <img
+                    <Image
                         alt="Login illustration"
-                        className="absolute inset-0 h-full w-full object-cover"
+                        layout="fill"
+                        objectFit="cover"
                         src="/login2.webp"
-                        style={{ aspectRatio: "799/535", objectFit: "cover" }}
                     />
                 </div>
                 <div className="flex-grow sm:max-w-md w-full sm:order-1 space-y-8">

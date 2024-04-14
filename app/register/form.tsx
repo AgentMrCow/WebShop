@@ -15,6 +15,7 @@ import { signIn } from "next-auth/react"
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import Link from 'next/link';
 import axios from 'axios';
+import Image from 'next/image';
 
 export default function RegisterForm() {
 
@@ -58,12 +59,14 @@ export default function RegisterForm() {
   return (
     <div className="flex sm:flex-row flex-col-reverse">
       <div className="flex-1 hidden sm:block relative">
-        <img
-          alt="Login illustration"
-          className="absolute inset-0 h-full w-full object-cover"
+        <Image
+          alt="Registration illustration"
           src="/register.webp"
-          style={{ aspectRatio: "799/535", objectFit: "cover" }}
+          layout="fill"
+          objectFit="cover"
+          className="absolute inset-0 h-full w-full"
         />
+
       </div>
       <div className="flex-grow sm:max-w-md w-full sm:order-1 space-y-8">
         <Form {...form}>
