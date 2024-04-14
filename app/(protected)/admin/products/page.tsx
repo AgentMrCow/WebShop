@@ -460,7 +460,7 @@ export default function ProductsPage() {
         //if (session?.user?.name === "Admin") {
         const fetchCategories = async () => {
             try {
-                const response = await axios.get('/api/categories');
+                const response = await axios.put('/api/categories');
                 setCategories(response.data);
             } catch (error) {
                 toast({
@@ -472,7 +472,7 @@ export default function ProductsPage() {
 
         const fetchProducts = async () => {
             try {
-                const response = await axios.get('/api/products');
+                const response = await axios.put('/api/products');
                 setProducts(response.data);
             } catch (error) {
                 toast({

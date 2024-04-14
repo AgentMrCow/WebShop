@@ -37,7 +37,7 @@ const Header = () => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const { data } = await axios.get('/api/categories');
+                const { data } = await axios.put('/api/categories');
                 setCategories(data);
             } catch (error) {
                 toast({
@@ -49,7 +49,7 @@ const Header = () => {
 
         const fetchProducts = async () => {
             try {
-                const { data } = await axios.get('/api/products');
+                const { data } = await axios.put('/api/products');
                 setProducts(data);
             } catch (error) {
                 toast({

@@ -7,6 +7,7 @@ import { useCart } from '@/app/(component)/CartContext';
 import { PayPalButtons } from "@paypal/react-paypal-js";
 import { toast } from '@/components/ui/use-toast';
 import { OnApproveData, OnApproveActions, CreateOrderData, CreateOrderActions } from '@paypal/paypal-js';
+import Image from 'next/image';
 
 export default function Checkout() {
 
@@ -39,6 +40,7 @@ export default function Checkout() {
         try {
             const total = items.reduce((acc, item) => acc + item.price * item.quantity, 0).toFixed(2);
             const orderDetails = items.map(item => ({
+                id: item.id,
                 name: item.name,
                 unit_amount: {
                     currency_code: "USD",
@@ -51,6 +53,10 @@ export default function Checkout() {
                 items: orderDetails,
                 total: total,
             });
+
+            if (res.data.error) {
+                throw new Error(res.data.error);
+            }
 
             const orderData = res.data;
             currentOrderUUID = orderData.uuid;
@@ -134,18 +140,23 @@ export default function Checkout() {
     const renderFallbackContent = () => {
         switch (transactionStatus) {
             case 'APPROVED':
-                return <img src='/trans_approve.webp' />;
+                return (
+                    <Image src='/trans_approve.webp' alt="Transaction Approved" height={1024} width={1792} />
+                );
             case 'CANCELLED':
-                return <img src='/trans_cancel.webp' />;
+                return (
+                    <Image src='/trans_cancel.webp' alt="Transaction Cancelled" height={1024} width={1792} />
+                );
             case 'ERROR':
-                return <img src='/trans_error.webp' />;
+                return (
+                    <Image src='/trans_error.webp' alt="Error" height={1024} width={1792} />
+                );
             default:
                 return (
                     <div>
                         {items.length === 0 && (
-                            <img src='/shop2.webp' alt="Shop" />
+                            <Image src='/shop2.webp' alt="Shop" height={1024} width={1792} />
                         )}
-
                         {items.length > 0 && (
                             <div className="flex flex-row justify-between items-start">
                                 <div className="flex-1 min-h-[600px]">
@@ -166,6 +177,7 @@ export default function Checkout() {
                 );
         }
     };
+
     return (
         <div>
             {renderFallbackContent()}

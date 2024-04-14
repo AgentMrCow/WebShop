@@ -40,7 +40,7 @@ const CategoriesComponent: React.FC = () => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const { data } = await axios.get('/api/categories');
+                const { data } = await axios.put('/api/categories');
                 setCategories(data);
             } catch (error) {
                 toast({

@@ -24,7 +24,7 @@ const ProductPage: React.FC<Params> = ({ params }) => {
     const fetchProduct = async () => {
       setLoading(true);
       try {
-        const response = await axios.get<Product>(`/api/${slug}`);
+        const response = await axios.put<Product>(`/api/${slug}`);
         setProduct(response.data);
       } catch (error) {
         toast({

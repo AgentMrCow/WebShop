@@ -1,6 +1,6 @@
 // @/app/(protected)/admin/layout.tsx
 "use client"
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
@@ -11,6 +11,7 @@ import { useSession, signOut } from 'next-auth/react';
 import { MessageSquare, LogOut } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { toast } from '@/components/ui/use-toast';
+import Image from 'next/image';
 
 export default function DashboardLayout({
     children,
@@ -38,7 +39,7 @@ export default function DashboardLayout({
                 description: `${error}`,
             }));
 
-        axios.get('/api/products')
+        axios.put('/api/products')
             .then(response => setProductCount(response.data.length))
             .catch(error => toast({
                 title: "Failed to fetch products:",
@@ -66,124 +67,133 @@ export default function DashboardLayout({
     const pageTitle = path === 'admin' ? 'Dashboard' : path.charAt(0).toUpperCase() + path.slice(1);
 
 
-    return (
-        <div className="admin-page-container">
-            <div className="grid min-h-screen w-full overflow-hidden lg:grid-cols-[280px_1fr]">
-                <div className="hidden border-r bg-gray-100/40 lg:block dark:bg-gray-800/40">
-                    <div className="flex flex-col gap-2">
-                        <div className="flex h-[60px] items-center px-6">
-                            <Link className="flex items-center gap-2 font-semibold" href="/admin">
-                                <Package2Icon className="h-6 w-6" />
-                                <span className="">Admin Panel</span>
-                            </Link>
-                        </div>
-                        <div className="flex-1">
-                            <nav className="grid items-start px-4 text-sm font-medium">
-                                <Link
-                                    className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${isActive('/admin') ? 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-50' : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50'
-                                        }`} href="/admin"
-                                >
-                                    <HomeIcon className="h-4 w-4" />
-                                    Home
+    if (session?.user?.isAdmin == true) {
+        return (
+            <div className="admin-page-container">
+                <div className="grid min-h-screen w-full overflow-hidden lg:grid-cols-[280px_1fr]">
+                    <div className="hidden border-r bg-gray-100/40 lg:block dark:bg-gray-800/40">
+                        <div className="flex flex-col gap-2">
+                            <div className="flex h-[60px] items-center px-6">
+                                <Link className="flex items-center gap-2 font-semibold" href="/admin">
+                                    <Package2Icon className="h-6 w-6" />
+                                    <span className="">Admin Panel</span>
                                 </Link>
-                                <Link
-                                    className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${isActive('/admin/orders') ? 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-50' : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50'
-                                        }`} href="/admin/orders"
-                                >
-                                    <ShoppingCartIcon className="h-4 w-4" />
-                                    Orders
-                                    <Badge className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">{orderCount}</Badge>
-                                </Link>
-                                <Link
-                                    className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${isActive('/admin/products') ? 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-50' : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50'
-                                        }`} href="/admin/products"
-                                >
-                                    <PackageIcon className="h-4 w-4" />
-                                    Products
-                                    <Badge className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">{productCount}</Badge>
-                                </Link>
-                                <Link
-                                    className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${isActive('/admin/customers') ? 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-50' : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50'
-                                        }`} href="/admin/customers"
-                                >
-                                    <UsersIcon className="h-4 w-4" />
-                                    Customers
-                                    <Badge className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">{userCount}</Badge>
-                                </Link>
-                                <Link
-                                    className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${isActive('/admin/settings') ? 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-50' : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50'
-                                        }`} href="/admin/settings"
-                                >
-                                    <SettingsIcon className="h-4 w-4" />
-                                    Settings
-                                </Link>
-                            </nav>
+                            </div>
+                            <div className="flex-1">
+                                <nav className="grid items-start px-4 text-sm font-medium">
+                                    <Link
+                                        className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${isActive('/admin') ? 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-50' : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50'
+                                            }`} href="/admin"
+                                    >
+                                        <HomeIcon className="h-4 w-4" />
+                                        Home
+                                    </Link>
+                                    <Link
+                                        className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${isActive('/admin/orders') ? 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-50' : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50'
+                                            }`} href="/admin/orders"
+                                    >
+                                        <ShoppingCartIcon className="h-4 w-4" />
+                                        Orders
+                                        <Badge className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">{orderCount}</Badge>
+                                    </Link>
+                                    <Link
+                                        className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${isActive('/admin/products') ? 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-50' : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50'
+                                            }`} href="/admin/products"
+                                    >
+                                        <PackageIcon className="h-4 w-4" />
+                                        Products
+                                        <Badge className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">{productCount}</Badge>
+                                    </Link>
+                                    <Link
+                                        className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${isActive('/admin/customers') ? 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-50' : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50'
+                                            }`} href="/admin/customers"
+                                    >
+                                        <UsersIcon className="h-4 w-4" />
+                                        Customers
+                                        <Badge className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">{userCount}</Badge>
+                                    </Link>
+                                    <Link
+                                        className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${isActive('/admin/settings') ? 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-50' : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50'
+                                            }`} href="/admin/settings"
+                                    >
+                                        <SettingsIcon className="h-4 w-4" />
+                                        Settings
+                                    </Link>
+                                </nav>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div className="flex flex-col">
-                    <header className="flex h-14 lg:h-[60px] items-center gap-4 border-b bg-gray-100/40 px-6 dark:bg-gray-800/40">
-                        <Link className="lg:hidden" href="/admin">
-                            <Package2Icon className="h-6 w-6" />
-                            <span className="sr-only">Home</span>
-                        </Link>
-                        <div className="flex-1">
-                            <h1 className="font-semibold text-lg">{pageTitle}</h1>
-                        </div>
-                        <div className="flex flex-1 items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
-                            <form className="ml-auto flex-1 sm:flex-initial">
-                                <div className="relative">
-                                    <SearchIcon className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500 dark:text-gray-400" />
-                                    <Input
-                                        className="pl-8 sm:w-[300px] md:w-[200px] lg:w-[300px] bg-white"
-                                        placeholder="     Search..."
-                                        type="search"
-                                    />
-                                </div>
-                            </form>
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button className="rounded-full" size="icon" variant="ghost">
-                                        <img
-                                            alt="Avatar"
-                                            className="rounded-full"
-                                            height="32"
-                                            src="/user-svgrepo-com.svg"
-                                            style={{
-                                                aspectRatio: "32/32",
-                                                objectFit: "cover",
-                                            }}
-                                            width="32"
+                    <div className="flex flex-col">
+                        <header className="flex h-14 lg:h-[60px] items-center gap-4 border-b bg-gray-100/40 px-6 dark:bg-gray-800/40">
+                            <Link className="lg:hidden" href="/admin">
+                                <Package2Icon className="h-6 w-6" />
+                                <span className="sr-only">Home</span>
+                            </Link>
+                            <div className="flex-1">
+                                <h1 className="font-semibold text-lg">{pageTitle}</h1>
+                            </div>
+                            <div className="flex flex-1 items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
+                                <form className="ml-auto flex-1 sm:flex-initial">
+                                    <div className="relative">
+                                        <SearchIcon className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500 dark:text-gray-400" />
+                                        <Input
+                                            className="pl-8 sm:w-[300px] md:w-[200px] lg:w-[300px] bg-white"
+                                            placeholder="     Search..."
+                                            type="search"
                                         />
-                                        <span className="sr-only">Toggle user menu</span>
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem><Link className="flex items-center" href="/admin/settings">
-                                        <SettingsIcon className="mr-2 h-4 w-4" /><span>Settings</span>
-                                    </Link></DropdownMenuItem>
-                                    <DropdownMenuItem><Link className="flex items-center" href="mailto:khzhang@ie.cuhk.edu.hk">
-                                        <MessageSquare className="mr-2 h-4 w-4" /><span>Support</span>
-                                    </Link></DropdownMenuItem>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem className='cursor-pointer' onClick={() => signOut()} >
-                                        <LogOut className="mr-2 h-4 w-4" /><span>Logout</span>
-                                    </DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                        </div>
-                    </header>
-                    <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
-                        <div className="grid gap-4 md:gap-6">
-                            {children}
-                        </div>
-                    </main>
+                                    </div>
+                                </form>
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button className="rounded-full" size="icon" variant="ghost">
+                                            <Image
+                                                alt="Avatar"
+                                                className="rounded-full"
+                                                src="/user-svgrepo-com.svg"
+                                                width={32}
+                                                height={32}
+                                                layout="fixed"
+                                            />
+                                            <span className="sr-only">Toggle user menu</span>
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end">
+                                        <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem><Link className="flex items-center" href="/admin/settings">
+                                            <SettingsIcon className="mr-2 h-4 w-4" /><span>Settings</span>
+                                        </Link></DropdownMenuItem>
+                                        <DropdownMenuItem><Link className="flex items-center" href="mailto:khzhang@ie.cuhk.edu.hk">
+                                            <MessageSquare className="mr-2 h-4 w-4" /><span>Support</span>
+                                        </Link></DropdownMenuItem>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem className='cursor-pointer' onClick={() => signOut()} >
+                                            <LogOut className="mr-2 h-4 w-4" /><span>Logout</span>
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            </div>
+                        </header>
+                        <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
+                            <div className="grid gap-4 md:gap-6">
+                                {children}
+                            </div>
+                        </main>
+                    </div>
                 </div>
             </div>
+        )
+    }
+    else return (
+        <div>
+            <h1>Access Denied</h1>
+            <p></p>
+            <p>Hi, <strong>{session?.user?.email ? session.user.email : "still loading, try to refresh"}</strong>,</p>
+            <p>You are login from <strong className="text-green-600">{session?.user?.provider ? session.user.provider : "LOADING..."}</strong> and not an <strong className="text-red-600">Admin User</strong></p>
+            <p>You <strong>do not</strong> have the necessary permissions to access the admin page.</p>
+            <Button onClick={() => signOut()}>Click here to logout and relogin as an admin user</Button>
         </div>
-    )
+    );
 }
 
 

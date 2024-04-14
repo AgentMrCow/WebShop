@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic'
 
 const prisma = new PrismaClient();
 
-export async function GET(request: NextRequest) {
+export async function PUT(request: NextRequest) {
     try {
         const categories = await prisma.category.findMany({
             include: {

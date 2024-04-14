@@ -23,7 +23,7 @@ const ProductDataSchema = z.object({
     imageName: z.string().transform(sanitizeInput),
 });
 
-export async function GET(
+export async function PUT(
     request: NextRequest,
     { params }: { params: { id: string } }
 ) {

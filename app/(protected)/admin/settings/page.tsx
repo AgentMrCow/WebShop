@@ -4,7 +4,7 @@
 import * as React from "react"
 import { useForm } from "react-hook-form";
 import axios from 'axios';
-import { signIn, signOut, getSession, useSession } from 'next-auth/react';
+import { signOut } from 'next-auth/react';
 import { loginFormSchema, loginFormValues, changePWSchema, changePWValues } from '@/app/zod';
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -141,7 +141,7 @@ export default function Settings() {
                         </FormDescription>
                     </div>
                     <FormControl>
-                        <Switch/>
+                        <Switch />
                     </FormControl>
                 </FormItem>
 

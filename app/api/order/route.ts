@@ -31,7 +31,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
 
 export async function PUT(req: NextRequest, res: NextResponse) {
     const session = await getServerSession();
-    if (!session) {
+    if (session?.user?.name !== "Admin") {
         return new NextResponse(JSON.stringify({ error: 'Not authenticated' }), { status: 401, headers: { "Content-Type": "application/json" } });
     }
     try {

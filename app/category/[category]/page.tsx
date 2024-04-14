@@ -26,7 +26,7 @@ const CategoryPage: React.FC<Params> = ({ params }) => {
         const fetchProducts = async () => {
             setLoading(true);
             try {
-                const response = await axios.get<Product[]>('/api/products');
+                const response = await axios.put<Product[]>('/api/products');
                 const filteredProducts = response.data.filter(p => p.Category.name.toLowerCase() === category.toLowerCase());
                 setProducts(filteredProducts);
             } catch (error) {
