@@ -1,3 +1,10 @@
-export { default } from 'next-auth/middleware';
+import { withAuth, type NextRequestWithAuth } from 'next-auth/middleware';
+import type { NextFetchEvent } from 'next/server';
 
-export const config = { matcher: ["/admin/", "/admin/:path*", "/checkout/"] };
+const authenticate = withAuth({ pages: { signIn: '/login' } });
+
+export default function middleware(request: NextRequestWithAuth, event: NextFetchEvent) {
+  return authenticate(request, event);
+}
+
+export const config = { matcher: ['/admin/:path*', '/checkout/:path*'] };

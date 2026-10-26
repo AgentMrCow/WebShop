@@ -30,6 +30,8 @@ interface AddToCartButtonProps {
 interface QuantitySelectorProps {
     quantity: number;
     onQuantityChange: (quantity: number) => void;
+    max?: number;
+    disabled?: boolean;
 }
 
 // @/app/(component)/CartContext.tsx
@@ -41,6 +43,7 @@ interface CartItem {
     description?: string;
     image: string;
     categoryId: number;
+    inventory?: number;
 }
 
 interface CartContextType {
@@ -49,6 +52,8 @@ interface CartContextType {
     updateItemQuantity: (id: number, quantity: number) => void;
     removeItem: (id: number) => void;
     clearCart: () => void;
+    hydrated: boolean;
+    completePurchase: (purchased: Array<{ id: number; quantity: number }>) => void;
 }
 
 // @/app/(component)/breadcrumbs.tsx

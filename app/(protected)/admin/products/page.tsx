@@ -26,14 +26,14 @@ import {
 
 interface ProductRowProps {
     product: Product;
-    onUpdate: (productData: any, id: number) => void;
+    onUpdate: (productData: ProductData, id: number) => Promise<void>;
     onDelete: (id: number) => void;
     categories: Category[];
 }
 
 interface CategoryRowProps {
     category: Category;
-    handleCategoryUpdate: (id: number, updatedData: any) => void;
+    handleCategoryUpdate: (id: number, updatedData: UpdatedCategoryData) => Promise<void>;
     handleCategoryDelete: (id: number) => void;
 }
 
@@ -54,30 +54,33 @@ function slugify(text: string) {
         .replace(/-+$/, '');            // Trim - from end of text
 }
 
-function createImageName(userInput: string, fileName: string): string {
-    const extension = fileName.slice(fileName.lastIndexOf('.')); // Extract the file extension including the dot
-
-    return '/' + userInput.toLowerCase() // Convert to lowercase
-        .replace(/\s+/g, '_') // Replace spaces with underscores
-        .replace(/[^\w\-]+/g, '') // Remove all non-word chars except underscores
-        .replace(/\_\_+/g, '_') // Replace multiple underscores with single underscore
-        .replace(/^_+/, '') // Trim underscore from start of text
-        .replace(/_+$/, '') // Trim underscore from end of text
-        + extension; // Use the extracted file extension
+async function uploadImage(file: File): Promise<string> {
+    if (file.size > 2 * 1024 * 1024 || !['image/png', 'image/jpeg', 'image/gif', 'image/webp'].includes(file.type)) {
+        throw new Error('Choose a PNG, JPEG, GIF or WebP image up to 2 MB.');
+    }
+    const body = new FormData();
+    body.append('file', file);
+    const response = await axios.post('/api/admin/image', body);
+    if (typeof response.data.url !== 'string') throw new Error('The image upload did not return a URL.');
+    return response.data.url;
 }
 
+function requestError(error: unknown): string {
+    return axios.isAxiosError(error) && typeof error.response?.data?.error === 'string'
+        ? error.response.data.error : error instanceof Error ? error.message : 'Please try again.';
+}
 
 const productFormSchema = z.object({
     name: z.string().min(1, "Product name is required."),
-    price: z.coerce.number().min(0, "Price must be a positive number."),
-    inventory: z.coerce.number().min(0, "Inventory must be a positive number."),
+    price: z.number().min(0, "Price must be a positive number."),
+    inventory: z.number().int("Inventory must be a whole number.").min(0, "Inventory cannot be negative."),
     description: z.string().min(1, "Product description is required."),
     category: z.string().min(1, "Please select a category."),
     image: z.instanceof(File)
-        .refine((file) => file.size <= 5242880, `File size should be less than 5 MB.`)
+        .refine((file) => file.size <= 2097152, `File size should be less than 2 MB.`)
         .refine(
-            (file) => ["image/png", "image/gif", "image/jpg", "image/jpeg",].includes(file.type),
-            "Only .jpg, .png, and .gif types are allowed."
+            (file) => ["image/png", "image/gif", "image/webp", "image/jpeg"].includes(file.type),
+            "Only JPEG, PNG, GIF and WebP images are allowed."
         ),
 });
 
@@ -86,10 +89,10 @@ type ProductFormValues = z.infer<typeof productFormSchema>;
 const categoryFormSchema = z.object({
     name: z.string().min(1, "Category name is required."),
     image: z.instanceof(File)
-        .refine((file) => file.size <= 5242880, `File size should be less than 5 MB.`)
+        .refine((file) => file.size <= 2097152, `File size should be less than 2 MB.`)
         .refine(
-            (file) => ["image/png", "image/gif", "image/jpg", "image/jpeg"].includes(file.type),
-            "Only .jpg, .png, and .gif types are allowed."
+            (file) => ["image/png", "image/gif", "image/webp", "image/jpeg"].includes(file.type),
+            "Only JPEG, PNG, GIF and WebP images are allowed."
         ),
 });
 
@@ -123,71 +126,19 @@ const ProductRow = ({ product, onUpdate, onDelete, categories }: ProductRowProps
         }
     }, [watchImage]);
 
+    const [saving, setSaving] = useState(false);
     const onSubmit = async (data: any) => {
-        const { image, name, ...otherData } = data;
-        const newImage = image?.[0];
-
-        if (!newImage) {
-            toast({
-                title: 'Image Required',
-                description: 'Please re-upload an image to update the product.(refresh this page after you see this message)',
-            });
-            return;
-        }
-
-        const slug = slugify(name);
-        const imageName = createImageName(name, newImage.name);
-        const nonImageData = {
-            name,
-            slug,
-            price: parseFloat(otherData.price),
-            inventory: parseInt(otherData.inventory, 10),
-            categoryId: parseInt(otherData.categoryId, 10),
-            description: otherData.description,
-            imageName,
-        };
-        // toast({
-        //   title: "nonImageData",
-        //   description: `${nonImageData}`,
-        // });
-
+        setSaving(true);
         try {
-            const response = await axios.patch(`/api/products/${product.id}`, nonImageData);
-
-            // toast({
-            //   title: "response.data",
-            //   description: `${response.data}`,
-            // });
-
-            const imageFormData = new FormData();
-
-            // Create a new Blob with the original image data but a new name
-            const newImageFile = new Blob([await newImage.arrayBuffer()], { type: newImage.type });
-
-            // Append the Blob as a File object, with the new name
-            imageFormData.append('file', newImageFile, imageName.slice(1)); // Remove the '/' at the beginning for the actual file name
-
-            const imageResponse = await axios.post(`/api/admin/image`, imageFormData);
-
-            // toast({
-            //   title: "Product updated successfully:",
-            //   description: `${imageResponse.data}`,
-            // });
-
-            toast({
-                title: 'Success',
-                description: 'Product updated successfully.',
-            });
-
+            const imageName = data.image?.[0] ? await uploadImage(data.image[0]) : product.image;
+            await onUpdate({ name: data.name, slug: slugify(data.name), price: Number(data.price),
+                inventory: Number(data.inventory), categoryId: Number(data.categoryId),
+                description: data.description, imageName }, product.id);
+            setImagePreview(imageName);
         } catch (error) {
-            toast({
-                title: "Failed to update product:",
-                description: `${error}`,
-            });
-        }
+            toast({ title: 'Unable to update product', description: requestError(error), variant: 'destructive' });
+        } finally { setSaving(false); }
     };
-
-
 
     return (
         <TableRow key={product.id}>
@@ -196,16 +147,16 @@ const ProductRow = ({ product, onUpdate, onDelete, categories }: ProductRowProps
                 <div style={{ width: '50px', height: '50px', position: 'relative' }}>
                     <Image src={imagePreview} alt={product.name} sizes="100%" fill style={{ objectFit: 'cover' }} />
                 </div>
-                <Input type="file" accept=".png, .jpg, .jpeg, .gif" {...register('image')} />
+                <Input type="file" accept=".png,.jpg,.jpeg,.gif,.webp" {...register('image')} />
             </TableCell>
             <TableCell>
                 <Textarea {...register('name')} />
             </TableCell>
             <TableCell>
-                <Input type="number" {...register('price')} />
+                <Input type="number" min="0" step="0.01" {...register('price')} />
             </TableCell>
             <TableCell>
-                <Input type="number" {...register('inventory')} />
+                <Input type="number" min="0" step="1" {...register('inventory')} />
             </TableCell>
             <TableCell>
                 <Textarea {...register('description')} />
@@ -218,7 +169,7 @@ const ProductRow = ({ product, onUpdate, onDelete, categories }: ProductRowProps
                 </select>
             </TableCell>
             <TableCell>
-                <Button size="sm" onClick={handleSubmit(onSubmit)}>Save</Button>
+                <Button type="button" size="sm" disabled={saving} onClick={handleSubmit(onSubmit)}>{saving ? 'Saving…' : 'Save'}</Button>
                 <Button size="sm" variant="outline" onClick={() => onDelete(product.id)}>Delete</Button>
             </TableCell>
         </TableRow>
@@ -249,47 +200,16 @@ const CategoryRow = ({ category, handleCategoryUpdate, handleCategoryDelete }: C
     }, [watchImage]);
 
 
+    const [saving, setSaving] = useState(false);
     const onSubmit = async (data: any) => {
-        const { image, name } = data;
-        const newImage = image?.[0];
-
-        if (!newImage) {
-            toast({
-                title: 'Image Required',
-                description: 'Please re-upload an image to update the category. (refresh this page after you see this message)',
-            });
-            return;
-        }
-        const link = `/category/${slugify(name)}`;
-        const imageName = createImageName(name, newImage.name);
-        const nonImageData = {
-            name,
-            imageName,
-            link,
-        };
-
+        setSaving(true);
         try {
-            const response = await axios.patch(`/api/categories/${category.id}`, nonImageData);
-
-            const imageFormData = new FormData();
-            if (newImage) {
-                const newImageFile = new Blob([await newImage.arrayBuffer()], { type: newImage.type });
-                imageFormData.append('file', newImageFile, imageName.slice(1)); // imageName.slice(1) to remove the leading '/'
-            }
-
-            const imageResponse = await axios.post(`/api/admin/image`, imageFormData);
-
-            toast({
-                title: 'Success',
-                description: 'Category updated successfully.',
-            });
-
+            const imageName = data.image?.[0] ? await uploadImage(data.image[0]) : category.image;
+            await handleCategoryUpdate(category.id, { name: data.name, link: `/category/${slugify(data.name)}`, imageName });
+            setImagePreview(imageName);
         } catch (error) {
-            toast({
-                title: "Failed to update category",
-                description: `${error}`,
-            });
-        }
+            toast({ title: 'Unable to update category', description: requestError(error), variant: 'destructive' });
+        } finally { setSaving(false); }
     };
 
     return (
@@ -299,7 +219,7 @@ const CategoryRow = ({ category, handleCategoryUpdate, handleCategoryDelete }: C
                 <div style={{ width: '50px', height: '50px', position: 'relative' }}>
                     <Image src={imagePreview} alt={category.name} sizes="100%" fill style={{ objectFit: 'cover' }} />
                 </div>
-                <Input type="file" accept=".png, .jpg, .jpeg, .gif" {...register('image')} />
+                <Input type="file" accept=".png,.jpg,.jpeg,.gif,.webp" {...register('image')} />
             </TableCell>
             <TableCell>
                 <Input {...register('name')} />
@@ -312,7 +232,7 @@ const CategoryRow = ({ category, handleCategoryUpdate, handleCategoryDelete }: C
                 </ul>
             </TableCell>
             <TableCell>
-                <Button size="sm" onClick={handleSubmit(onSubmit)}>Save</Button>
+                <Button type="button" size="sm" disabled={saving} onClick={handleSubmit(onSubmit)}>{saving ? 'Saving…' : 'Save'}</Button>
                 <Button size="sm" variant="outline" onClick={() => handleCategoryDelete(category.id)}>Delete</Button>
             </TableCell>
         </TableRow>
@@ -338,7 +258,7 @@ const ImageUploadField: React.FC<ImageUploadFieldProps & { imagePreview: string,
             const files = e.dataTransfer.files;
             if (files && files.length > 0) {
                 const file = files[0];
-                if (file.type.startsWith('image/')) {
+                if (file.size <= 2097152 && ['image/png', 'image/jpeg', 'image/gif', 'image/webp'].includes(file.type)) {
                     onChange(file);
                     const reader = new FileReader();
                     reader.onloadend = () => {
@@ -350,7 +270,7 @@ const ImageUploadField: React.FC<ImageUploadFieldProps & { imagePreview: string,
                 } else {
                     toast({
                         title: 'Invalid file type',
-                        description: 'Please upload an image file.',
+                        description: 'Choose a PNG, JPEG, GIF or WebP image up to 2 MB.',
                     });
                 }
             }
@@ -385,6 +305,10 @@ const ImageUploadField: React.FC<ImageUploadFieldProps & { imagePreview: string,
                     onDragOver={onDragOver}
                     onDragLeave={onDragLeave}
                     onClick={openFileDialog}
+                    role="button"
+                    tabIndex={0}
+                    aria-label="Choose an image up to 2 MB"
+                    onKeyDown={event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openFileDialog(); } }}
                     style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '200px' }}
                 >
                     {imagePreview ? (
@@ -406,15 +330,16 @@ const ImageUploadField: React.FC<ImageUploadFieldProps & { imagePreview: string,
                     )}
                     <Input
                         type="file"
-                        accept=".png, .jpg, .jpeg, .gif"
+                        onClick={event => event.stopPropagation()}
+                        accept=".png,.jpg,.jpeg,.gif,.webp"
                         onChange={(e) => {
                             const file = e.target.files ? e.target.files[0] : null;
                             onChange(file);
                             if (file) {
-                                if (!file.type.startsWith('image/')) {
+                                if (file.size > 2097152 || !['image/png', 'image/jpeg', 'image/gif', 'image/webp'].includes(file.type)) {
                                     toast({
                                         title: 'Invalid file type',
-                                        description: 'Please upload an image file.',
+                                        description: 'Choose a PNG, JPEG, GIF or WebP image up to 2 MB.',
                                     });
                                 }
                                 else {
@@ -456,50 +381,23 @@ export default function ProductsPage() {
     const resetCategoryImagePreview = () => setCategoryImagePreview('');
     const resetProductImagePreview = () => setProductImagePreview('');
 
-    useEffect(() => {
-        //if (session?.user?.name === "Admin") {
-        const fetchCategories = async () => {
-            try {
-                const response = await axios.put('/api/categories');
-                setCategories(response.data);
-            } catch (error) {
-                toast({
-                    title: "Failed to fetch categories",
-                    description: `${error}`,
-                });
-            }
-        };
-
-        const fetchProducts = async () => {
-            try {
-                const response = await axios.put('/api/products');
-                setProducts(response.data);
-            } catch (error) {
-                toast({
-                    title: "Failed to fetch products",
-                    description: `${error}`,
-                });
-            }
-        };
-
-        // Using Promise.all to run both fetch operations in parallel
-        Promise.all([fetchCategories(), fetchProducts()]).catch((error) => {
-            toast({
-                title: "Failed to fetch data",
-                description: `${error}`,
-            });
-        });
-        //}
-        //}, [session]); // 'session' is the dependency for this effect
+    const refreshCatalogue = useCallback(async () => {
+        const [categoryResponse, productResponse] = await Promise.all([
+            axios.get<Category[]>('/api/categories'), axios.get<Product[]>('/api/products'),
+        ]);
+        setCategories(categoryResponse.data);
+        setProducts(productResponse.data);
     }, []);
-
+    useEffect(() => {
+        refreshCatalogue().catch(error => toast({ title: 'Unable to load catalogue', description: requestError(error), variant: 'destructive' }));
+    }, [refreshCatalogue]);
 
     const productForm = useForm<ProductFormValues>({
         resolver: zodResolver(productFormSchema),
         defaultValues: {
             name: "",
-            price: NaN,
-            inventory: NaN,
+            price: 0,
+            inventory: 0,
             description: "",
             category: "",
             image: undefined,
@@ -529,161 +427,57 @@ export default function ProductsPage() {
     };
 
     async function onProductSubmit(data: ProductFormValues) {
-        // Separate the image data from the rest of the form data
-        const { image, name, ...otherData } = data;
-
-        // Generate slug from the product name
-        const slug = slugify(name);
-
-        const imageName = createImageName(name, image.name);
-
-        const nonImageData = {
-            type: 'product',
-            ...otherData,
-            name,
-            slug,
-            imageName,
-        };
-
         try {
-            const response = await axios.post('/api/admin', nonImageData);
-
-            // toast({
-            //   title: "Form data submitted successfully:",
-            //   description: `${response.data}`,
-            // });
-
-            const imageFormData = new FormData();
-
-            // Create a new Blob with the original image data but a new name
-            const newImageFile = new Blob([await image.arrayBuffer()], { type: image.type });
-
-            // Append the Blob as a File object, with the new name
-            imageFormData.append('file', newImageFile, imageName.slice(1)); // Remove the '/' at the beginning for the actual file name
-
-            const imageResponse = await axios.post(`/api/admin/image`, imageFormData);
-
-            // toast({
-            //   title: "Image submitted successfully:",
-            //   description: `${imageResponse.data}`,
-            // });
-
-            toast({
-                title: 'Product created',
-                description: 'The product and its image have been successfully created.',
-            });
-
+            const imageName = await uploadImage(data.image);
+            await axios.post('/api/admin', { type: 'product', name: data.name, slug: slugify(data.name),
+                price: data.price, inventory: data.inventory, description: data.description,
+                category: data.category, imageName });
+            await refreshCatalogue();
+            handleProductReset();
+            toast({ title: 'Product created', description: 'The product is now available in the catalogue.' });
         } catch (error) {
-            toast({
-                title: 'Error',
-                description: 'Failed to create product. Please make sure creating a product with an unique name.' + `${error}`,
-            });
+            toast({ title: 'Unable to create product', description: requestError(error), variant: 'destructive' });
         }
     }
 
     async function onCategorySubmit(data: CategoryFormValues) {
-        const { image, name } = data;
-
-        // Generate a link and imageName based on the category name
-        const link = `/category/${slugify(name)}`;
-        const imageName = createImageName(name, image.name);
-
-        const nonImageData = {
-            type: 'category',
-            name,
-            imageName,
-            link,
-        };
-
         try {
-            const response = await axios.post('/api/admin', nonImageData);
-
-            // toast({
-            //   title: "Form data submitted successfully:",
-            //   description: `${response.data}`,
-            // });
-
-            const imageFormData = new FormData();
-
-            // Create a new Blob with the original image data but a new name
-            const newImageFile = new Blob([await image.arrayBuffer()], { type: image.type });
-
-            // Append the Blob as a File object, with the new name
-            imageFormData.append('file', newImageFile, imageName.slice(1)); // Remove the '/' at the beginning for the actual file name
-
-            const imageResponse = await axios.post(`/api/admin/image`, imageFormData);
-
-            // toast({
-            //   title: "Image submitted successfully:",
-            //   description: `${imageResponse.data}`,
-            // });
-
-            toast({
-                title: 'Category created',
-                description: 'The category and its image have been successfully created.',
-            });
-
+            const imageName = await uploadImage(data.image);
+            await axios.post('/api/admin', { type: 'category', name: data.name, link: `/category/${slugify(data.name)}`, imageName });
+            await refreshCatalogue();
+            handleCategoryReset();
+            toast({ title: 'Category created' });
         } catch (error) {
-            toast({
-                title: 'Error',
-                description: 'Failed to create category. Please make sure creating a product with an unique name.' + `${error}`,
-            });
+            toast({ title: 'Unable to create category', description: requestError(error), variant: 'destructive' });
         }
     }
 
     const handleProductUpdate = async (productData: ProductData, id: number): Promise<void> => {
-        try {
-            await axios.patch(`/api/products/${id}`, productData);
-            toast({ title: 'Product updated successfully' });
-        } catch (error) {
-            toast({
-                title: "Failed to update product:",
-                description: `${error}`,
-            });
-        }
+        await axios.patch(`/api/products/${id}`, productData);
+        await refreshCatalogue();
+        toast({ title: 'Product updated successfully' });
     };
-
-
     const handleProductDelete = async (id: number): Promise<void> => {
+        if (!window.confirm('Delete this product from the catalogue?')) return;
         try {
             await axios.delete(`/api/products/${id}`);
-            setProducts(products.filter((product) => product.id !== id));
-            setCategories(categories.filter((category) => category.id !== id));
-            toast({ title: 'Product deleted successfully' });
-        } catch (error) {
-            toast({
-                title: "Failed to delete product:",
-                description: `${error}`,
-            });
-        }
+            await refreshCatalogue();
+            toast({ title: 'Product deleted' });
+        } catch (error) { toast({ title: 'Unable to delete product', description: requestError(error), variant: 'destructive' }); }
     };
-
     const handleCategoryUpdate = async (id: number, updatedData: UpdatedCategoryData): Promise<void> => {
-        try {
-            await axios.patch(`/api/categories/${id}`, updatedData);
-            toast({ title: 'Category updated successfully' });
-        } catch (error) {
-            toast({
-                title: "Failed to update category:",
-                description: `${error}`,
-            });
-        }
+        await axios.patch(`/api/categories/${id}`, updatedData);
+        await refreshCatalogue();
+        toast({ title: 'Category updated successfully' });
     };
-
     const handleCategoryDelete = async (id: number): Promise<void> => {
+        if (!window.confirm('Delete this category? Move or remove its products first.')) return;
         try {
             await axios.delete(`/api/categories/${id}`);
-            setCategories(categories.filter((category) => category.id !== id));
-            setProducts(products.filter((product) => product.categoryId !== id));
-            toast({ title: 'Category and associated products deleted successfully' });
-        } catch (error) {
-            toast({
-                title: "Failed to delete category and its products:",
-                description: `${error}`,
-            });
-        }
+            await refreshCatalogue();
+            toast({ title: 'Category deleted' });
+        } catch (error) { toast({ title: 'Unable to delete category', description: requestError(error), variant: 'destructive' }); }
     };
-
 
     return (
         <Accordion type="multiple" className="w-full">
@@ -748,7 +542,7 @@ export default function ProductsPage() {
                                             <FormItem>
                                                 <FormLabel className="text-base">Price</FormLabel>
                                                 <FormControl>
-                                                    <Input type="number" placeholder="Enter the product price" {...field} />
+                                                    <Input type="number" min="0" step="0.01" placeholder="Enter the product price" {...field} value={Number.isFinite(field.value) ? field.value : ''} onChange={event => field.onChange(event.target.valueAsNumber)} />
                                                 </FormControl>
                                                 <FormDescription>
                                                     {"cannot be negative, simply adjust it by inputting the value or pressing buttton ↑ or ↓ to adjust the value"}
@@ -764,7 +558,7 @@ export default function ProductsPage() {
                                             <FormItem>
                                                 <FormLabel className="text-base">Inventory</FormLabel>
                                                 <FormControl>
-                                                    <Input type="number" placeholder="Enter the product inventory" {...field} />
+                                                    <Input type="number" min="0" step="1" placeholder="Enter the product inventory" {...field} value={Number.isFinite(field.value) ? field.value : ''} onChange={event => field.onChange(event.target.valueAsNumber)} />
                                                 </FormControl>
                                                 <FormDescription>
                                                     {"cannot be negative, simply adjust it by inputting the value or pressing buttton ↑ or ↓ to adjust the value"}
@@ -813,7 +607,7 @@ export default function ProductsPage() {
                                     />
                                 </CardContent>
                                 <CardFooter className="flex gap-4">
-                                    <Button type="submit">Insert</Button>
+                                    <Button type="submit" disabled={productForm.formState.isSubmitting}>Insert</Button>
                                     <Button variant="outline" type="button" onClick={handleProductReset}>Reset</Button>
                                 </CardFooter>
                             </Card>
@@ -872,7 +666,7 @@ export default function ProductsPage() {
                                     />
                                 </CardContent>
                                 <CardFooter className="flex gap-4">
-                                    <Button type="submit">Insert</Button>
+                                    <Button type="submit" disabled={categoryForm.formState.isSubmitting}>Insert</Button>
                                     <Button variant="outline" type="button" onClick={handleCategoryReset}>Reset</Button>
                                 </CardFooter>
                             </Card>
@@ -884,7 +678,7 @@ export default function ProductsPage() {
                 <AccordionTrigger>View / Update / Delete Categories</AccordionTrigger>
                 <AccordionContent>
                     <div className="border shadow-sm rounded-lg p-2 mb-8">
-                        <h2 className="text-lg font-semibold mb-4">Categories (Please re-upload the image to update.)</h2>
+                        <h2 className="text-lg font-semibold mb-4">Categories (image replacement is optional)</h2>
                         <Table>
                             <TableHeader>
                                 <TableRow>
@@ -913,7 +707,7 @@ export default function ProductsPage() {
                 <AccordionTrigger>View / Update / Delete Products</AccordionTrigger>
                 <AccordionContent>
                     <div className="border shadow-sm rounded-lg p-2 mb-8">
-                        <h2 className="text-lg font-semibold mb-4">Products (Please re-upload the image to update.)</h2>
+                        <h2 className="text-lg font-semibold mb-4">Products (image replacement is optional)</h2>
                         <Table>
                             <TableHeader>
                                 <TableRow>

@@ -1,40 +1,40 @@
-// @/app/(component)/AddToCartButton.tsx
+"use client";
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/app/(component)/CartContext';
-import { motion } from 'framer-motion';
 
 interface AnimationItem {
-  id: number;
+  id: string;
+  quantity: number;
 }
 
 const AddToCartButton: React.FC<AddToCartButtonProps> = ({ product, quantity }) => {
-  const { addItem } = useCart();
+  const { addItem, items, hydrated } = useCart();
   const [animations, setAnimations] = useState<AnimationItem[]>([]);
 
   const handleAddToCart = () => {
-    addItem(product, quantity);
-    setAnimations((prev) => [...prev, { id: Date.now() }]); // Use the current timestamp as a unique ID
+    if (!Number.isSafeInteger(quantity) || quantity < 1 || product.inventory < 1) return;
+    const available = Math.min(99, product.inventory) - (items.find(item => item.id === product.id)?.quantity ?? 0);
+    const added = Math.min(quantity, available);
+    if (added < 1) return;
+    addItem(product, added);
+    setAnimations((prev) => [...prev, { id: crypto.randomUUID(), quantity: added }]);
   };
 
   return (
     <div className="relative">
-      <Button className="ml-auto" onClick={handleAddToCart}>Add to Cart</Button>
+      <Button type="button" className="ml-auto" disabled={!hydrated || product.inventory < 1 || (items.find(item => item.id === product.id)?.quantity ?? 0) >= Math.min(99, product.inventory)} onClick={handleAddToCart}>{product.inventory < 1 ? 'Out of stock' : 'Add to Cart'}</Button>
       {animations.map((animation) => (
-        <motion.div
-          key={animation.id} // Key each animation by its unique ID
-          className="absolute right-0 bottom-0 text-lg font-bold"
-          initial={{ opacity: 0, scale: 0.5, y: 0 }}
-          animate={{ opacity: 1, scale: 1.5, y: -50 }}
-          exit={{ opacity: 0 }} // Define exit animation
-          transition={{ duration: 1, type: 'spring', stiffness: 300 }}
-          onAnimationComplete={() => {
+        <div
+          key={animation.id}
+          className="webshop-cart-added absolute right-0 bottom-0 text-lg font-bold pointer-events-none"
+          onAnimationEnd={() => {
             // Remove the animation from the list when it completes
             setAnimations((prev) => prev.filter((item) => item.id !== animation.id));
           }}
         >
-          +{quantity}
-        </motion.div>
+          +{animation.quantity}
+        </div>
       ))}
     </div>
   );

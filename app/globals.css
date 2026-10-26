@@ -1,6 +1,16 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@keyframes webshop-cart-added {
+  from { opacity: 0; transform: translateY(0) scale(.5); }
+  30% { opacity: 1; }
+  to { opacity: 0; transform: translateY(-50px) scale(1.5); }
+}
+.webshop-cart-added { animation: webshop-cart-added 800ms ease-out forwards; }
+@media (prefers-reduced-motion: reduce) {
+  .webshop-cart-added { animation-duration: 1ms; }
+}
  
 @layer base {
   :root {

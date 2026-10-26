@@ -54,7 +54,8 @@ import {
 type Payment = {
     id: string;
     amount: string;
-    status: "pending" | "success";
+    status: "pending" | "demo" | "capturing" | "payment_review" | "paid" | "completed" | "cancelled";
+    mode?: 'demo' | 'paypal-sandbox';
     email: string;
     orderDetails?: string;
     createdAt: string;
@@ -94,7 +95,7 @@ const columns: ColumnDef<Payment>[] = [
         accessorKey: "status",
         header: "Status",
         cell: ({ row }) => (
-            <div className="capitalize">{row.getValue("status")}</div>
+            <div className="capitalize">{row.original.status === 'demo' ? 'Demo · No charge' : row.original.status === 'completed' && row.original.mode === 'demo' ? 'Demo completed · No charge' : ['paid', 'completed'].includes(row.original.status) && row.original.mode === 'paypal-sandbox' ? 'Sandbox paid' : row.original.status.replaceAll('_', ' ')}</div>
         ),
     },
     {
@@ -116,7 +117,7 @@ const columns: ColumnDef<Payment>[] = [
         accessorKey: "amount",
         header: () => <div className="text-right">Amount</div>,
         cell: ({ row }) => {
-            const amount = parseFloat(row.getValue("amount"))
+            const amount = Number.parseFloat(row.getValue("amount")) || 0
 
             const formatted = new Intl.NumberFormat("en-US", {
                 style: "currency",
@@ -146,7 +147,7 @@ const columns: ColumnDef<Payment>[] = [
                             onClick={() => navigator.clipboard.writeText(payment.id)}
                         >
                             <Copy className="mr-2 h-4 w-4" />
-                            <span>Copy payment ID</span>
+                            <span>Copy order ID</span>
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <Link href="/admin/customers"><DropdownMenuItem>
@@ -156,7 +157,7 @@ const columns: ColumnDef<Payment>[] = [
                         <DropdownMenuSub>
                             <DropdownMenuSubTrigger>
                                 <CreditCard className="mr-2 h-4 w-4" />
-                                <span>View payment details</span>
+                                <span>View order details</span>
                             </DropdownMenuSubTrigger>
                             <DropdownMenuPortal>
                                 <DropdownMenuSubContent>
@@ -166,12 +167,13 @@ const columns: ColumnDef<Payment>[] = [
                                             {payment.orderDetails ? (
                                                 <div>
                                                     {(() => {
-                                                        const details = JSON.parse(payment.orderDetails);
+                                                        let details;
+                                                        try { details = JSON.parse(payment.orderDetails); } catch { return <p>Order details are unavailable.</p>; }
                                                         return (
                                                             <>
                                                                 <strong>Order Details:</strong>
                                                                 <ul>
-                                                                    {details.items.map((item: Item, index: number) => (
+                                                                    {(Array.isArray(details.items) ? details.items : []).map((item: Item, index: number) => (
                                                                         <li key={index}>
                                                                             {item.name} - Quantity: {item.quantity} - Price: ${item.price}
                                                                         </li>
@@ -232,14 +234,18 @@ export default function DataTableDemo() {
     })
 
     const fetchOrders = async () => {
+        setLoading(true);
+        setError(null);
         try {
             const response = await axios.put('/api/order');
             const orders = response.data.map((order: any) => {
-                const orderDetails = order.orderDetails ? JSON.parse(order.orderDetails) : null;
+                let orderDetails = null;
+                try { orderDetails = order.orderDetails ? JSON.parse(order.orderDetails) : null; } catch { /* Legacy records may omit details. */ }
                 return {
                     id: order.uuid,
-                    amount: orderDetails && orderDetails.total ? orderDetails.total : "N/A",
-                    status: orderDetails ? "success" : "pending",
+                    amount: String(order.total ?? orderDetails?.total ?? 0),
+                    status: (order.status ?? "pending").toLowerCase(),
+                    mode: order.mode,
                     email: order.username,
                     orderDetails: order.orderDetails,
                     createdAt: new Date(order.createdAt).toLocaleString(),
@@ -263,13 +269,14 @@ export default function DataTableDemo() {
         fetchOrders();
     }, []);
 
-    if (loading) return <div>Loading...</div>;
-    if (error) return <div>Error: {error}</div>;
+    if (loading) return <p role="status">Loading orders…</p>;
+    if (error) return <div role="alert" className="space-y-3"><p>{error}. Please retry or sign in again.</p><Button variant="outline" onClick={fetchOrders}>Retry</Button></div>;
 
 
 
     return (
         <div className="w-full">
+            <p className="mb-3 rounded-md bg-blue-50 p-3 text-sm text-blue-900">Demo orders are unpaid. Sandbox payments are test transactions with no real charge.</p>
             <div className="flex items-center py-4">
                 <Input
                     placeholder="Filter emails..."

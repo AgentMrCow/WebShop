@@ -5,46 +5,44 @@ import Image from 'next/image';
 import Breadcrumbs from '@/app/(component)/breadcrumbs';
 import AddToCartButton from '@/app/(component)/AddToCartButton';
 import QuantitySelector from '@/app/(component)/QuantitySelector';
-import { toast } from "@/components/ui/use-toast"
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
+import { useParams } from 'next/navigation';
 
-type Params = {
-  params: {
-    category: string;
-    slug: string;
-  };
-};
-
-const ProductPage: React.FC<Params> = ({ params }) => {
-  const { category, slug } = params;
+const ProductPage = () => {
+  const { category, slug } = useParams<{ category: string; slug: string }>();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [retry, setRetry] = useState(0);
   const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
     const fetchProduct = async () => {
       setLoading(true);
+      setError('');
+      setProduct(null);
+      setQuantity(1);
       try {
-        const response = await axios.put<Product>(`/api/${slug}`);
+        const response = await axios.get<Product>(`/api/${encodeURIComponent(slug)}`);
         setProduct(response.data);
-      } catch (error) {
-        toast({
-          title: "Failed to fetch product",
-          description: `${error}`,
-        });
+      } catch (cause) {
+        if (!axios.isAxiosError(cause) || cause.response?.status !== 404) setError('This product is temporarily unavailable.');
       } finally {
         setLoading(false);
       }
     };
 
     fetchProduct();
-  }, [slug]);
+  }, [slug, retry]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <p role="status" className="py-8">Loading product…</p>;
   }
+  if (error) return <div role="alert" className="space-y-3 py-8"><p>{error}</p><Button variant="outline" onClick={() => setRetry(value => value + 1)}>Retry</Button></div>;
 
   if (!product) {
-    return <div className="mt-5 container mx-auto"><p>Product not found.</p></div>;
+    return <div className="space-y-3 py-8"><p>Product not found.</p><Link href="/" className="text-blue-600 underline">Browse all categories</Link></div>;
   }
 
   const breadcrumbs = [
@@ -63,14 +61,14 @@ const ProductPage: React.FC<Params> = ({ params }) => {
         <div className="w-full md:w-1/2 pl-4">
           <h2 className="text-2xl font-bold">{product.name}</h2>
           <p className="mt-2">{product.description}</p>
-          <p className="text-xl font-semibold my-2">${product.price}</p>
+          <p className="text-xl font-semibold my-2">${product.price.toFixed(2)}</p>
           {product.inventory <= 3 ? (
-            <p className="text-red-500">Only {product.inventory} left!</p>
+            <p className="text-red-500">{product.inventory === 0 ? 'Out of stock' : `Only ${product.inventory} left!`}</p>
           ) : (
             <p className="text-green-500">In stock: {product.inventory}</p>
           )}
           <div className="mt-4">
-            <QuantitySelector quantity={quantity} onQuantityChange={setQuantity} />
+            <QuantitySelector quantity={quantity} max={product.inventory} disabled={product.inventory < 1} onQuantityChange={setQuantity} />
             <p className="p-2"></p>
             <AddToCartButton product={product} quantity={quantity} />
           </div>

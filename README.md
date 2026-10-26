@@ -1,111 +1,109 @@
-<p align="center">
-  <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/NextJS-Dark.svg" alt="Next.js logo" title="Next.js - The React Framework" width="40" height="40"/>
-  <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/React-Dark.svg" alt="React logo" title="React - A JavaScript library for building user interfaces" width="40" height="40"/>
-  <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/NodeJS-Dark.svg" alt="Node.js logo" title="Node.js - JavaScript runtime built on Chrome's V8 JavaScript engine" width="40" height="40"/>
-  <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/TypeScript.svg" alt="TypeScript logo" title="TypeScript - A typed superset of JavaScript" width="40" height="40"/>
-  <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/JavaScript.svg" alt="JavaScript logo" title="JavaScript - High-level, often just-in-time compiled, and multi-paradigm" width="40" height="40"/>
-  <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/Prisma.svg" alt="Prisma logo" title="Prisma - Next-generation ORM for Node.js and TypeScript" width="40" height="40"/>
-  <img src="https://zod.dev/logo.svg" alt="Zod logo" title="Zod - TypeScript-first schema validation with static type inference" width="40" height="40"/>
-  <img src="https://react-hook-form.com/images/logo/react-hook-form-logo-only.svg" alt="React Hook Form logo" title="React Hook Form - Performant, flexible, and extensible forms with easy-to-use validation" width="40" height="40"/>
-  <img src="https://user-images.githubusercontent.com/8939680/57233882-20344080-6fe5-11e9-9086-d20a955bed59.png" alt="Axios logo" title="Axios - Promise-based HTTP client for the browser and node.js" width="40" height="40"/>
-  <img src="https://avatars.githubusercontent.com/u/139895814" alt="Shadcn UI logo" title="Shadcn UI - A modern UI library for React" width="40" height="40"/>
-  <img src="https://bestofjs.org/logos/motion.dark.svg" alt="Framer Motion logo" title="Framer Motion - An animation library for React" width="40" height="40"/>
-  <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/HTML.svg" alt="HTML5 logo" title="HTML5 - Standard markup language for documents designed to be displayed in a web browser" width="40" height="40"/>
-  <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/CSS.svg" alt="CSS3 logo" title="CSS3 - Style sheet language used for describing the presentation of a document written in a markup language" width="40" height="40"/>
-  <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/TailwindCSS-Dark.svg" alt="Tailwind CSS logo" title="Tailwind CSS - A utility-first CSS framework for rapid UI development" width="40" height="40"/>
-  <img src="https://authjs.dev/img/etc/logo-sm.webp" alt="Auth.js logo" title="Auth.js - JavaScript API for authentication" width="40" height="40"/>
-  <img src="https://cdn-icons-png.flaticon.com/512/174/174861.png" alt="PayPal logo" title="PayPal - Online payment system" width="40" height="40"/>
-  <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/SQLite.svg" alt="SQLite logo" title="SQLite - SQL database engine" width="40" height="40"/>
-  <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/AWS-Dark.svg" alt="AWS logo" title="AWS (Amazon Web Services) - Secure cloud services platform" width="40" height="40"/>
-</p>
+# WebShop
 
-# Secure Web Shop - Phase 4 Documentation
+A full-stack e-commerce app with a product catalogue, shopping cart, customer accounts, checkout and an administration dashboard. Built with Next.js, React, NextAuth and Prisma, and deployed on Vercel.
 
-## Introduction
+**[Explore the live demo](https://ierg4210-1155174712.vercel.app/)**
 
-This document outlines the security measures implemented in the web application as part of Phase 4. The focus has been on mitigating common web security vulnerabilities such as XSS, SQL Injection, CSRF, and ensuring secure authentication and session management.
+## Features
 
-## Security Implementations
+- **Storefront:** browse 40 products across 9 categories, view product details and check stock availability.
+- **Shopping cart:** add products, adjust quantities and keep your basket between visits.
+- **Customer accounts:** register with email and password, or sign in with Google or GitHub when configured.
+- **Orders:** place orders, view order history and cancel eligible orders, with inventory updated automatically.
+- **Checkout:** try the PayPal sandbox payment flow, or use demo checkout when PayPal is not configured.
+- **Administration:** manage products, categories, customers, inventory and orders from a dedicated dashboard.
+- **Product images:** upload and manage images through the administration interface.
 
-### 1. XSS (Cross-Site Scripting) Prevention
+The live site is a demonstration store. PayPal uses sandbox payments; purchases are not charged or fulfilled.
 
-- **Client-Side Input Restrictions**: Utilized `zod`, `TypeScript` and `shadcn/ui` (like `maxlength`, `type`, and custom validation patterns) to restrict user input on all forms.
-- **Server-Side Input Sanitization and Validation**: Integrated `zod` for schema validation and used `isomorphic-dompurify` to sanitize user inputs and prevent malicious scripts from being saved or executed.
-- **Output Sanitization**: Ensured that data displayed back to users is sanitized, especially in dynamic content, to prevent stored XSS attacks.
+## Tech stack
 
-_Code Reference_: `zod.tsx` for input validation and sanitization schemas.
+| Layer | Technology |
+| --- | --- |
+| Application | Next.js App Router, React and TypeScript |
+| Interface | Tailwind CSS, Radix UI and shadcn/ui components |
+| Authentication | NextAuth with email/password, Google and GitHub providers |
+| Data | Prisma with PostgreSQL in production and SQLite for local development |
+| Payments | PayPal Sandbox |
+| Hosting | Vercel |
 
-### 2. SQL Injection Mitigation
+## Run locally
 
-- **Parameterized Queries**: Used parameterized queries by `prisma` in all database interactions to separate SQL code from data, effectively preventing SQL injection.
+Use Node.js 22 and npm.
 
-### 3. CSRF (Cross-Site Request Forgery) Prevention
-
-- **Secret Nonces**: Implemented secret nonces that are tied to the user session and validated on every form submission to prevent CSRF attacks by `next-auth`.
-- **Double Submit Cookie Pattern**: Utilized cookies to store CSRF tokens and validated them against the token sent in form submissions.
-
-### 4. Authentication and Session Management
-
-- **User Authentication**: Implemented a secure login system with email and password. Used `bcrypt` for password hashing and comparisons.
-- **Session Management**: Utilized JWT for session management, ensuring tokens are stored securely using HttpOnly cookies. Implemented token rotation upon login to prevent session fixation attacks.
-- **Password Management**: Enabled users to change passwords securely, validating the current password before updating and ensuring logout post-password change.
-
-_Code Reference_: `auth` directory for authentication and session management implementations.
-
-### 5. Secure Administration Panel
-
-- **Access Control**: Restricted access to the administration panel to authenticated users with admin privileges only by `middleware.ts`.
-- **Session Validation**: Ensured that every request to the admin panel validates the session token to confirm administrative privileges.
-
-### 6. Session ID and Nonce Security
-
-- Ensured that all session IDs and nonces are generated using secure, non-predictable algorithms to prevent guessing attacks.
-
-### 7. SSL/TLS Implementation
-
-- **Certificate Application**: Applied for and obtained an SSL certificate to enable HTTPS on the domain [https://example.invalid/](https://example.invalid/)
-- **Secure Configuration**: Configured Nginx to use strong algorithms and secure cipher suites, ensuring that all HTTP traffic is redirected to HTTPS:
-```nginx
-server {
-    listen       443 ssl http2;
-    listen       [::]:443 ssl http2;
-    server_name  example.invalid;
-
-    ssl_certificate "***********";
-    ssl_certificate_key "***********";
-    ssl_session_cache shared:SSL:1m;
-    ssl_session_timeout  10m;
-    ssl_ciphers PROFILE=SYSTEM;
-    ssl_prefer_server_ciphers on;
-
-    add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data: https://lh3.googleusercontent.com https://avatars.githubusercontent.com; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; block-all-mixed-content; upgrade-insecure-requests;";
-    add_header X-Content-Type-Options "nosniff";
-    add_header Referrer-Policy "origin-when-cross-origin";
-    add_header X-DNS-Prefetch-Control "on";
-    add_header Permissions-Policy "camera=(), microphone=(), geolocation=()";
-    add_header X-Frame-Options "SAMEORIGIN";
-    add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload";
-
-    location / {
-        proxy_pass http://localhost:3000;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_cache_bypass $http_upgrade;
-        proxy_hide_header X-Powered-By;
-    }
-}
+```sh
+git clone https://github.com/AgentMrCow/WebShop.git
+cd WebShop
+npm ci
+npm run setup:local
+npm run dev:local
 ```
 
-### Advanced Authentication System
+Open [localhost:3000](http://localhost:3000), browse the catalogue and register an account to try the order flow. Setup creates the local configuration and SQLite database, then initializes the catalogue. Running setup again preserves your existing data.
 
-- **Multi-Provider Authentication**: Integrated third-party OAuth providers (Google and GitHub) to offer users alternative login options, enhancing the user login experience and security.
-- **Session Management Enhancements**: Custom session handling logic with JWT, extending the session capabilities to include user roles (admin, user) and the authentication provider, allowing for more granular access control and personalized user experiences.
-- **Register**: Allow user to register and login with own account instead of hard code account.
+To run a local production build:
 
-_Code Snippets_: `NextAuth` setup in `[...nextauth].ts`.
+```sh
+npm run build:local
+npm run start:local
+```
 
-## Conclusion
+## Deploy on Vercel
 
-The security measures implemented aim to protect the web application from common threats and vulnerabilities, ensuring the integrity, confidentiality, and availability of the user data and the application itself. Further enhancements and security audits are planned to continuously improve the security posture of the application.
+Connect the repository to a Vercel project using the **Next.js** framework preset and Node.js 22. Add a PostgreSQL database, then configure the environment variables below in the project settings. The included `vercel.json` installs dependencies, applies migrations, initializes the catalogue and builds the app.
+
+| Variable | Purpose |
+| --- | --- |
+| `DATABASE_URL` | PostgreSQL connection for the application. `POSTGRES_PRISMA_URL` and `POSTGRES_URL` are also supported. |
+| `DIRECT_URL` | Optional direct connection for migrations when using a pooler. `POSTGRES_URL_NON_POOLING` is also supported. |
+| `NEXTAUTH_URL` | The deployed website's origin. |
+| `NEXTAUTH_SECRET` | A unique authentication secret for each environment. |
+| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | Optional Google sign-in. |
+| `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` | Optional GitHub sign-in. |
+| `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET` | Optional PayPal sandbox checkout. |
+
+For Google and GitHub sign-in, set the provider callback URL to your site's origin followed by `/api/auth/callback/google` or `/api/auth/callback/github`. Each provider appears once both of its configuration values are set.
+
+Production and preview deployments should use separate database schemas or databases. Local development uses the SQLite setup above.
+
+The deployment preparation commands are:
+
+```sh
+npm run db:deploy
+npm run build
+```
+
+The catalogue is initialized once. For an existing PostgreSQL database, review its migration baseline before deployment.
+
+## Create an administrator
+
+Website registration creates customer accounts. To create an administrator, set `ADMIN_EMAIL` and `ADMIN_PASSWORD` in your environment or local environment file. The password must contain at least 16 characters and fit within 72 UTF-8 bytes.
+
+For local development, run this after `setup:local`:
+
+```sh
+npm run admin:create -- --local
+```
+
+For a deployed database, also supply `DATABASE_URL`, either through the environment or `.env.production.local`, and run:
+
+```sh
+npm run admin:create -- --production
+```
+
+The command creates a new account and leaves existing accounts unchanged. Remove the provisioning variables after use.
+
+## Development checks
+
+```sh
+npm test
+npm run typecheck
+npm run check:public
+npm run build:local
+```
+
+The tests cover input validation, account access and order processing.
+
+## Background
+
+Developed by Nelson Niu for CUHK IERG4210.

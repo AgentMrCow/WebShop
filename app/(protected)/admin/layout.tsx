@@ -25,6 +25,7 @@ export default function DashboardLayout({
     const [productCount, setProductCount] = useState(0);
 
     useEffect(() => {
+        if (status !== 'authenticated' || !session?.user?.isAdmin) return;
         axios.post('/api/user')
             .then(response => setUserCount(response.data.length))
             .catch(error => toast({
@@ -45,22 +46,17 @@ export default function DashboardLayout({
                 title: "Failed to fetch products:",
                 description: `${error}`,
             }));
-    }, []);
+    }, [status, session?.user?.isAdmin]);
 
     const isActive = (path: string) => pathname === path;
 
-    if (session?.user?.name !== "Admin" || session.user.provider === "google" || session.user.provider === "github") {
-        return (
-            <div>
-                <h1>Access Denied</h1>
-                <p></p>
-                <p>Hi, <strong>{session?.user?.email ? session.user.email : "still loading, try to refresh"}</strong>,</p>
-                <p>You are login from <strong className="text-green-600">{session?.user?.provider ? session.user.provider : "LOADING..."}</strong> and not an <strong className="text-red-600">Admin User</strong></p>
-                <p>You <strong>do not</strong> have the necessary permissions to access the admin page.</p>
-                <Button onClick={() => signOut()}>Click here to logout and relogin as an admin user</Button>
-            </div>
-        );
-    }
+    if (status === 'loading') return <p className="p-8 text-center" role="status">Checking access…</p>;
+    if (!session?.user?.isAdmin) return <div className="my-8 rounded-lg border p-6">
+        <h1 className="text-xl font-semibold">Admin access required</h1>
+        <p className="my-3 text-gray-500">Sign in with an account that has been granted administrator access.</p>
+        <Button asChild><Link href="/login?callbackUrl=%2Fadmin">Open my account</Link></Button>
+        <Link href="/" className="ml-4 text-blue-600">Back to WebShop</Link>
+    </div>;
 
     const pathSegments = pathname.split('/');
     const path = pathSegments.pop() || 'admin';
@@ -123,7 +119,7 @@ export default function DashboardLayout({
                             </div>
                         </div>
                     </div>
-                    <div className="flex flex-col">
+                    <div className="flex min-w-0 flex-col">
                         <header className="flex h-14 lg:h-[60px] items-center gap-4 border-b bg-gray-100/40 px-6 dark:bg-gray-800/40">
                             <Link className="lg:hidden" href="/admin">
                                 <Package2Icon className="h-6 w-6" />
@@ -133,16 +129,7 @@ export default function DashboardLayout({
                                 <h1 className="font-semibold text-lg">{pageTitle}</h1>
                             </div>
                             <div className="flex flex-1 items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
-                                <form className="ml-auto flex-1 sm:flex-initial">
-                                    <div className="relative">
-                                        <SearchIcon className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500 dark:text-gray-400" />
-                                        <Input
-                                            className="pl-8 sm:w-[300px] md:w-[200px] lg:w-[300px] bg-white"
-                                            placeholder="     Search..."
-                                            type="search"
-                                        />
-                                    </div>
-                                </form>
+                                <Link href="/" className="ml-auto text-sm text-blue-600 hover:underline">View store</Link>
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
                                         <Button className="rounded-full" size="icon" variant="ghost">
@@ -152,7 +139,6 @@ export default function DashboardLayout({
                                                 src="/user-svgrepo-com.svg"
                                                 width={32}
                                                 height={32}
-                                                layout="fixed"
                                             />
                                             <span className="sr-only">Toggle user menu</span>
                                         </Button>
@@ -163,8 +149,8 @@ export default function DashboardLayout({
                                         <DropdownMenuItem><Link className="flex items-center" href="/admin/settings">
                                             <SettingsIcon className="mr-2 h-4 w-4" /><span>Settings</span>
                                         </Link></DropdownMenuItem>
-                                        <DropdownMenuItem><Link className="flex items-center" href="mailto:demo@example.com">
-                                            <MessageSquare className="mr-2 h-4 w-4" /><span>Support</span>
+                                        <DropdownMenuItem><Link className="flex items-center" href="/login">
+                                            <MessageSquare className="mr-2 h-4 w-4" /><span>My account</span>
                                         </Link></DropdownMenuItem>
                                         <DropdownMenuSeparator />
                                         <DropdownMenuItem className='cursor-pointer' onClick={() => signOut()} >
@@ -174,6 +160,9 @@ export default function DashboardLayout({
                                 </DropdownMenu>
                             </div>
                         </header>
+                        <nav aria-label="Admin sections" className="flex flex-wrap gap-2 border-b p-3 text-sm lg:hidden">
+                            {['', '/orders', '/products', '/customers', '/settings'].map(section => <Link key={section} href={`/admin${section}`} className={`rounded px-3 py-2 ${isActive(`/admin${section}`) ? 'bg-slate-900 text-white' : 'bg-slate-100'}`}>{section ? section.slice(1) : 'Dashboard'}</Link>)}
+                        </nav>
                         <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
                             <div className="grid gap-4 md:gap-6">
                                 {children}

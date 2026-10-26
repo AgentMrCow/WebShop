@@ -34,14 +34,14 @@ export function CarouselPlugin() {
                     onMouseLeave={plugin.current.reset}
                 >
                     <CarouselContent className="-mt-1 h-[50vh] sm:h-[70vh] md:h-[90vh] lg:h-[100vh] xl:h-[760px]">
-                        {Array.from({ length: 5 }).map((_, index) => (
-                            <CarouselItem key={index} className="pt-1">
+                        {[1, 3, 5].map((imageNumber) => (
+                            <CarouselItem key={imageNumber} className="pt-1">
                                 <div className="p-1">
                                     <Card>
                                         <CardContent className="flex items-center justify-center p-6">
                                             <Image
-                                                src={`/admin_${index + 1}.png`}
-                                                alt={`Admin Dashboard ${index + 1}`}
+                                                src={`/admin_${imageNumber}.png`}
+                                                alt={`Admin Dashboard ${imageNumber}`}
                                                 width={1388}
                                                 height={937}
                                             />

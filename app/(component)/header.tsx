@@ -26,10 +26,13 @@ import Autoplay from "embla-carousel-autoplay"
 import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem, CommandSeparator, CommandShortcut } from "@/components/ui/command";
 import { toast } from "@/components/ui/use-toast"
 import { usePathname } from 'next/navigation';
+import { useCart } from './CartContext';
 
 
 
 const Header = () => {
+    const { items } = useCart();
+    const cartCount = items.reduce((total, item) => total + item.quantity, 0);
     const [categories, setCategories] = useState<Category[]>([]);
     const [products, setProducts] = useState<Product[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
@@ -37,7 +40,7 @@ const Header = () => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const { data } = await axios.put('/api/categories');
+                const { data } = await axios.get('/api/categories');
                 setCategories(data);
             } catch (error) {
                 toast({
@@ -49,7 +52,7 @@ const Header = () => {
 
         const fetchProducts = async () => {
             try {
-                const { data } = await axios.put('/api/products');
+                const { data } = await axios.get('/api/products');
                 setProducts(data);
             } catch (error) {
                 toast({
@@ -76,22 +79,23 @@ const Header = () => {
         <>
             {!isAdminPage && (
                 <header className="bg-white shadow-sm">
-                    <nav className="container mx-auto px-4 py-3 flex items-center ">
-                        <div className="hidden sm:flex items-center">
+                    <nav className="container mx-auto px-2 py-3 flex flex-wrap gap-1 items-center ">
+                        <div className="flex items-center mr-2">
                             <Link href="/" className="text-xl font-semibold text-gray-800">WebShop</Link>
                         </div>
 
                         <NavigationMenu>
                             <NavigationMenuList>
                                 <NavigationMenuItem>
-                                    <NavigationMenuTrigger className=" text-green-600 hover:text-green-800 transition-colors duration-150">
+                                    <NavigationMenuTrigger aria-label={`Shopping cart, ${cartCount} items`} className=" text-green-600 hover:text-green-800 transition-colors duration-150">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16" className="inline-block w-6 h-6">
                                             <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .49.598l-1 5a.5.5 0 0 1-.465.401l-9.397.472L4.415 11H13a.5.5 0 0 1 0 1H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l.84 4.479 9.144-.459L13.89 4H3.102zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM5 13a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
                                         </svg>
+                                        {cartCount > 0 && <span className="ml-1 text-xs font-semibold">{cartCount}</span>}
                                     </NavigationMenuTrigger>
                                     <NavigationMenuContent>
                                         {!isCheckoutPage && (
-                                            <ScrollArea className="absolute mt-1 py-2 bg-white shadow-lg rounded-md w-96 h-30">
+                                            <ScrollArea className="mt-1 py-2 bg-white shadow-lg rounded-md w-[min(24rem,calc(100vw-2rem))] h-[min(36rem,75vh)]">
                                                 <ShoppingCartPage />
                                             </ScrollArea>
                                         )}
@@ -102,12 +106,12 @@ const Header = () => {
                         <NavigationMenu>
                             <NavigationMenuList>
                                 <NavigationMenuItem>
-                                    <NavigationMenuTrigger className="text-pink-600 hover:text-pink-800 transition-colors duration-150">
+                                    <NavigationMenuTrigger aria-label="My account" className="text-pink-600 hover:text-pink-800 transition-colors duration-150">
                                         <UserIcon />
                                     </NavigationMenuTrigger>
                                     <NavigationMenuContent>
                                         {!isLoginPage && !isCheckoutPage && (
-                                            <ScrollArea className="absolute mt-1 py-2 bg-white shadow-lg rounded-md w-96 h-30">
+                                            <ScrollArea className="mt-1 py-2 bg-white shadow-lg rounded-md w-[min(24rem,calc(100vw-2rem))] h-[min(36rem,75vh)]">
                                                 <LoginComponent />
                                             </ScrollArea>
                                         )}
@@ -116,7 +120,7 @@ const Header = () => {
                             </NavigationMenuList>
                         </NavigationMenu>
 
-                        <NavigationMenu className="mr-14">
+                        <NavigationMenu className="sm:mr-4">
                             <NavigationMenuList>
                                 <NavigationMenuItem>
                                     <NavigationMenuTrigger>
@@ -129,7 +133,7 @@ const Header = () => {
                                                 <CommandList>
                                                     {
                                                         filteredProducts.map((product) => (
-                                                            <Link defaultValue={product.id} key={product.id} href={`${product.Category.link}/${product.slug}`} className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-100 hover:text-blue-500 transition-colors duration-150">
+                                                            <Link key={product.id} href={`${product.Category.link}/${product.slug}`} className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-100 hover:text-blue-500 transition-colors duration-150">
                                                                 <Image src={product.image} alt={product.name} width={40} height={40} className="rounded-md" />
                                                                 <span>{product.name}</span>
                                                             </Link>

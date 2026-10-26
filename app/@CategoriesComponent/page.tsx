@@ -2,13 +2,12 @@
 "use client"
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import axios from 'axios';
-import { toast } from "@/components/ui/use-toast"
+import { Button } from '@/components/ui/button';
 
 const useWindowSize = () => {
     const [windowSize, setWindowSize] = useState({
-        width: typeof window !== 'undefined' ? window.innerWidth : 0,
+        width: 0,
     });
 
     useEffect(() => {
@@ -30,6 +29,9 @@ const useWindowSize = () => {
 
 const CategoriesComponent: React.FC = () => {
     const [categories, setCategories] = useState<Category[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(false);
+    const [retry, setRetry] = useState(0);
     const [hoveredCategoryIndex, setHoveredCategoryIndex] = useState<number | null>(null);
     const { width } = useWindowSize();
 
@@ -39,23 +41,24 @@ const CategoriesComponent: React.FC = () => {
 
     useEffect(() => {
         const fetchCategories = async () => {
+            setLoading(true);
+            setError(false);
             try {
-                const { data } = await axios.put('/api/categories');
+                const { data } = await axios.get('/api/categories');
                 setCategories(data);
-            } catch (error) {
-                toast({
-                    title: "Failed to fetch categories",
-                    description: `${error}`,
-                });
-            }
+            } catch { setError(true); }
+            finally { setLoading(false); }
         };
 
         fetchCategories();
-    }, []);
+    }, [retry]);
 
     return (
         <div className="categories">
             <h2 className="mb-4">Categories</h2>
+            {loading && <p role="status" className="py-8 text-gray-500">Loading categories…</p>}
+            {error && <div role="alert" className="space-y-3 py-8"><p>Categories are temporarily unavailable.</p><Button variant="outline" onClick={() => setRetry(value => value + 1)}>Retry</Button></div>}
+            {!loading && !error && !categories.length && <p className="py-8 text-gray-500">New categories are coming soon.</p>}
             <div className="mt-4 p-0">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                     {categories.map((category, index) => {
@@ -77,23 +80,19 @@ const CategoriesComponent: React.FC = () => {
                         const bgImage = (width !== undefined && width <= 768) || isHovered || isBeyondGrid || !bgImageName ? category.image : bgImageName;
                         return (
                             <Link key={index} href={category.link}>
-                                <motion.div
-                                    whileHover={{ scale: 1.04 }}
-                                    transition={{ duration: 0.3 }}
-                                    className="block relative bg-gray-200 shadow-lg bg-cover bg-center cursor-pointer"
+                                <div
+                                    className="block relative bg-gray-200 shadow-lg bg-cover bg-center cursor-pointer transition-transform duration-300 hover:scale-[1.04] motion-reduce:transform-none"
                                     onMouseEnter={() => setHoveredCategoryIndex(index)}
                                     onMouseLeave={() => setHoveredCategoryIndex(null)}
                                     style={{
                                         paddingBottom: '100%',
                                         backgroundImage: `url('${bgImage}')`
                                     }}
-                                    role="link"
-                                    tabIndex={0}
                                 >
                                     <div className="absolute bottom-2.5 left-2.5 text-white bg-black bg-opacity-50 p-1 text-lg font-bold">
                                         {category.name}
                                     </div>
-                                </motion.div>
+                                </div>
                             </Link>
                         );
                     })}
