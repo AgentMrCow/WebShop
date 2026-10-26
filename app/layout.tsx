@@ -8,8 +8,22 @@ import Link from 'next/link';
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXTAUTH_URL || "https://ierg4210-1155174712.vercel.app"),
   title: "IERG4210 WebShop",
   description: "WebShop by Nelson Niu — an interactive e-commerce course project with a product catalogue, shopping cart and test checkout.",
+  openGraph: {
+    title: "WebShop — Full-stack E-commerce Demo",
+    description: "Explore a full-stack e-commerce course project with product browsing, a shopping cart, customer accounts, order management and PayPal sandbox checkout.",
+    url: "/",
+    siteName: "WebShop",
+    type: "website",
+    images: [{
+      url: "/shop1792x1024.png",
+      width: 1792,
+      height: 1024,
+      alt: "Illustration of the WebShop storefront",
+    }],
+  },
 };
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode; }>) {
